@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <v-autocomplete 
+    <!-- <v-autocomplete 
     id="autocomplete"
     label="Pesquisa" 
     :items="filtroProdutos" 
@@ -9,7 +9,7 @@
     :return-object="true"
     @update:modelValue="onSelect"
 >
-</v-autocomplete>
+</v-autocomplete> -->
 <span class="page-orientation">  </span>
     <div class="flip-book" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
@@ -83,12 +83,31 @@
       <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard"></div>
       
     </div>
+    <v-dialog id="PesquisaItem" v-model="ativarPesquisa" >
+      <v-card>
+        <v-autocomplete 
+        id="autocomplete"
+        label="Pesquisa" 
+        clearable
+        :items="filtroProdutos" 
+        item-title="nome"
+        v-model="(filtroProdutos as any).paginaDoProduto"
+        :return-object="true"
+        @update:modelValue="onSelect"
+        >
+        </v-autocomplete>
+        <v-btn @click="Pesquisa">Fechar Pesquisa</v-btn>
+      </v-card>
+    </v-dialog>
     <v-row>
       <v-col class="d-flex justify-end">
         <v-btn icon="mdi-arrow-left-bold" @click="antPag"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-center">
-        <v-btn @click="selectPag(2)">Sumário</v-btn>
+      <v-col class="d-flex justify-end">
+        <v-btn  icon="mdi-home-outline" @click="selectPag(2)"></v-btn>
+      </v-col>
+      <v-col class="d-flex justify-start">
+        <v-btn icon="mdi-magnify" @click="Pesquisa"></v-btn>
       </v-col>
       <v-col class="d-flex justify-start" @click="proxPag">
         <v-btn icon="mdi-arrow-right-bold"></v-btn>
@@ -108,11 +127,15 @@ const mostrarCapa = ref(true)
 const pageFlip = ref<PageFlip>()
 
 const filtroProdutos = ref<Produto[]>(props.produtos)
+const ativarPesquisa = ref(false)
 
+const Pesquisa = () => {
+  ativarPesquisa.value = !ativarPesquisa.value
+}
 
 const onSelect = (produtoSelecionado: any) => {
   if (produtoSelecionado && produtoSelecionado.paginaDoProduto) {
-    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25) + 1; // Acesse o array dentro de `filtroProdutos` com `.value`
+    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25) + 1;
     const pagina = (produtoSelecionado.paginaDoProduto) + totalPaginas; 
     selectPag(pagina);
   }
@@ -151,7 +174,7 @@ function concatenarDetalhe(item: any) {
 }
 
 onMounted(() => {
-  construirLivro()
+  construirLivro();
 })
 
 function construirLivro() {
@@ -159,18 +182,18 @@ function construirLivro() {
   if (!livroElemento) return
 
   pageFlip.value = new PageFlip(livroElemento, {
-    width: 550, // base page width
-    height: 700, // base page height
+    width: 550, // Largura da página base 
+    height: 700, // Altura da página base
 
-    // set threshold values:
+    // Define valores limite:
     minWidth: 315,
     maxWidth: 1000,
     minHeight: 420,
     maxHeight: 1350,
 
-    maxShadowOpacity: -0.5, // Half shadow intensity
+    maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
-    mobileScrollSupport: true, // disable content scrolling on mobile devices
+    mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
     disableFlipByClick: true,
     
   })
@@ -183,6 +206,12 @@ function construirLivro() {
 </script>
 
 <style>
+#PesquisaItem{
+  max-width: 600px; 
+  width: 100%; 
+  
+}
+
 #demoBookExample {
   margin: 15px auto;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
