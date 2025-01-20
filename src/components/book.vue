@@ -1,16 +1,6 @@
 <template>
   <div class="container">
-    <!-- <v-autocomplete 
-    id="autocomplete"
-    label="Pesquisa" 
-    :items="filtroProdutos" 
-    item-title="nome"
-    v-model="(filtroProdutos as any).paginaDoProduto"
-    :return-object="true"
-    @update:modelValue="onSelect"
->
-</v-autocomplete> -->
-<span class="page-orientation">  </span>
+    <!-- <span class="page-orientation">  </span> -->
     <div class="flip-book" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div>
@@ -18,85 +8,100 @@
         </div>
       </div>
     </div>
-    <div class="flip-book" id="demoBookExample" >
-
+    <div class="flip-book" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
-        <div class="page" v-for="(numPag) in Math.ceil(filtroProdutos.length/25)">
+        <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)">
           <p id="text-sumario">Sumário</p>
 
           <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
-            <v-btn id="opc-sumario" variant="plain" @click="selectPag((Math.ceil(filtroProdutos.length/25) + 1 ) + produto.paginaDoProduto)" >
+            <v-btn
+              id="opc-sumario"
+              variant="plain"
+              @click="
+                selectPag(Math.ceil(filtroProdutos.length / 25) + 1 + produto.paginaDoProduto)
+              "
+            >
               <div id="text-opc-sumario">
-                {{ produto.paginaDoProduto = (numPag - 1) * 25 + i + 1 }} - {{ produto.nome }}
+                {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ produto.nome }}
               </div>
             </v-btn>
           </p>
         </div>
       </div>
 
-      <div class="page" v-for="(produto,index) in filtroProdutos">
+      <div class="page" v-for="(produto, index) in filtroProdutos">
         <div class="page-content">
           <h1 class="page-header">{{ produto.nome }}</h1>
           <div class="carousel-img">
-            <v-carousel height="300" show-arrows="hover" hide-delimiter-background width="100%">
+            <v-carousel height="500" show-arrows="hover" hide-delimiter-background width="100%">
               <div>
                 <v-carousel-item
                   v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
                   :key="imgId"
                 >
                   <v-sheet height="100%">
-                    <div >
-                      <v-img class="bg-grey-lighten-2" height="300" :src="detalhe.url" />
+                    <div>
+                      <v-img class="bg-grey-lighten-2" height="500" :src="detalhe.url" />
                     </div>
                   </v-sheet>
                 </v-carousel-item>
               </div>
             </v-carousel>
           </div>
-          <div class="select-detalhe">
-            <v-select
-              density="compact"
-              label="Detalhamento"
-              min-width="300"
-              :items="produto.detalhamento"
-              :item-title="(item) => concatenarDetalhe(item)"
-              :return-object="true"
-              v-model="produto.detalhamentoSelecionado"
-            >
-            </v-select>
-
-          </div>
-
-          <div class="page-text">
-            <p>
-              {{ produto.descricao }}
-            </p>
-            <p class="text-medidas">
-              <p class="text-interno-medidas">Altura:{{ produto.altura }}</p>
-              <p> Largura:{{ produto.largura }}</p>
-              <p> Comprimento:{{produto.comprimento}}</p>
-            </p>
-          </div>
+          <v-row>
+            <v-col class="d-flex justify-end" lg="10">
+              <div class="select-detalhe">
+                <v-select
+                  density="compact"
+                  label="Detalhamento"
+                  min-width="360"
+                  :items="produto.detalhamento"
+                  :item-title="(item) => concatenarDetalhe(item)"
+                  :return-object="true"
+                  v-model="produto.detalhamentoSelecionado"
+                >
+                </v-select>
+              </div>
+            </v-col>
+            <v-col class="d-flex justify-center btnInfo" lg="1">
+              <v-dialog v-model="infoItem">
+                <v-card>
+                  <div class="">
+                    {{ produto.descricao }}
+                  </div>
+                </v-card>
+              </v-dialog>
+              <div>
+                <v-btn icon="mdi-exclamation-thick" @click="informacao"></v-btn>
+              </div>
+            </v-col>
+            <v-col class="d-flex justify-center btnInfo" lg="1">
+              <div>
+                <v-btn icon="mdi-magnify-expand" @click=""></v-btn>
+              </div>
+            </v-col>
+            
+          </v-row>
+          
           <div class="page-footer">{{ index + 1 }}</div>
         </div>
       </div>
       <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard"></div>
-      
     </div>
-    <v-dialog id="PesquisaItem" v-model="ativarPesquisa" >
+    <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
       <v-card>
-        <v-autocomplete 
-        id="autocomplete"
-        label="Pesquisa" 
-        clearable
-        :items="filtroProdutos" 
-        item-title="nome"
-        v-model="(filtroProdutos as any).paginaDoProduto"
-        :return-object="true"
-        @update:modelValue="onSelect"
+        <v-autocomplete
+          id="autocomplete"
+          label="Pesquisa"
+          clearable
+          :items="filtroProdutos"
+          item-title="nome"
+          v-model="(filtroProdutos as any).paginaDoProduto"
+          :return-object="true"
+          @update:modelValue="onSelect"
         >
         </v-autocomplete>
-        <v-btn @click="Pesquisa">Fechar Pesquisa</v-btn>
+        <v-btn @click="pesquisa">Fechar Pesquisa</v-btn>
       </v-card>
     </v-dialog>
     <v-row>
@@ -104,18 +109,16 @@
         <v-btn icon="mdi-arrow-left-bold" @click="antPag"></v-btn>
       </v-col>
       <v-col class="d-flex justify-end">
-        <v-btn  icon="mdi-home-outline" @click="selectPag(2)"></v-btn>
+        <v-btn icon="mdi-home-outline" @click="selectPag(2)"></v-btn>
       </v-col>
       <v-col class="d-flex justify-start">
-        <v-btn icon="mdi-magnify" @click="Pesquisa"></v-btn>
+        <v-btn icon="mdi-magnify" @click="pesquisa"></v-btn>
       </v-col>
       <v-col class="d-flex justify-start" @click="proxPag">
         <v-btn icon="mdi-arrow-right-bold"></v-btn>
       </v-col>
     </v-row>
-      
-    </div>
-  
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -128,37 +131,41 @@ const pageFlip = ref<PageFlip>()
 
 const filtroProdutos = ref<Produto[]>(props.produtos)
 const ativarPesquisa = ref(false)
+const infoItem = ref(false)
 
-const Pesquisa = () => {
+const informacao = () => {
+  infoItem.value = !infoItem.value
+}
+
+const pesquisa = () => {
   ativarPesquisa.value = !ativarPesquisa.value
 }
 
 const onSelect = (produtoSelecionado: any) => {
   if (produtoSelecionado && produtoSelecionado.paginaDoProduto) {
-    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25) + 1;
-    const pagina = (produtoSelecionado.paginaDoProduto) + totalPaginas; 
-    selectPag(pagina);
+    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25) + 1
+    const pagina = produtoSelecionado.paginaDoProduto + totalPaginas
+    selectPag(pagina)
   }
-};
+}
 
 const selectPag = (Pag: any) => {
   if (pageFlip.value) {
-    pageFlip.value.turnToPage(Pag); 
+    pageFlip.value.turnToPage(Pag)
   }
-};
-
+}
 
 const proxPag = () => {
   if (pageFlip.value) {
-    pageFlip.value.turnToNextPage(); 
+    pageFlip.value.turnToNextPage()
   }
-};
+}
 
 const antPag = () => {
   if (pageFlip.value) {
-    pageFlip.value.turnToPrevPage(); 
+    pageFlip.value.turnToPrevPage()
   }
-};
+}
 
 function concatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor
@@ -174,7 +181,7 @@ function concatenarDetalhe(item: any) {
 }
 
 onMounted(() => {
-  construirLivro();
+  construirLivro()
 })
 
 function construirLivro() {
@@ -182,7 +189,7 @@ function construirLivro() {
   if (!livroElemento) return
 
   pageFlip.value = new PageFlip(livroElemento, {
-    width: 550, // Largura da página base 
+    width: 550, // Largura da página base
     height: 700, // Altura da página base
 
     // Define valores limite:
@@ -194,22 +201,20 @@ function construirLivro() {
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
     mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: true,
-    
+    disableFlipByClick: true
   })
 
   const pages = document.querySelectorAll('.page') as NodeListOf<HTMLElement>
 
-  if (pages.length === 0) throw 'Nenhuma página encontrada' 
+  if (pages.length === 0) throw 'Nenhuma página encontrada'
   pageFlip.value.loadFromHTML(pages)
 }
 </script>
 
 <style>
-#PesquisaItem{
-  max-width: 600px; 
-  width: 100%; 
-  
+
+#PesquisaItem {
+  width: 600px;
 }
 
 #demoBookExample {
@@ -219,21 +224,25 @@ function construirLivro() {
   background-size: cover !important;
 }
 
-#text-sumario{
+#text-sumario {
   font-size: 25px;
   text-align: center;
-  
+
   color: #545454;
 }
 
-#opc-sumario{
+#opc-sumario {
   font-size: 11px;
   margin-top: -3%;
 }
-#text-opc-sumario{
-  white-space: normal; 
-  word-wrap: break-word; 
-  text-align: left; 
+#text-opc-sumario {
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.btnInfo {
+  margin-top: 1%;
 }
 
 .text-medidas {
@@ -245,7 +254,7 @@ function construirLivro() {
   position: fixed;
 }
 
-.text-interno-medidas{
+.text-interno-medidas {
   margin-top: 2%;
 }
 
