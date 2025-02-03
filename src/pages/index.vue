@@ -58,6 +58,7 @@ onMounted(async () => {
     } else {
       lista.value = await getProdutos(token)
       lista.value.produtos = ordenarProdutos(lista.value.produtos)
+      console.log(lista.value)
     }
   } catch (error:any) {
     if (error instanceof Error) {

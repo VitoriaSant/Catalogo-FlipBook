@@ -9,6 +9,7 @@
       </div>
     </div>
     <div class="flip-book" id="demoBookExample">
+      <!-- Sumario -->
       <div class="page page-cover page-cover-top" data-density="hard">
         <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)">
           <p id="text-sumario">Sumário</p>
@@ -28,7 +29,7 @@
           </p>
         </div>
       </div>
-
+      <!-- Pagina de produtos -->
       <div class="page" v-for="(produto, index) in filtroProdutos">
         <div class="page-content">
           <h1 class="page-header">{{ produto.nome }}</h1>
@@ -49,6 +50,7 @@
             </v-carousel>
           </div>
           <v-row>
+            <!-- Seleçao de detalhamento -->
             <v-col class="d-flex justify-end" lg="10">
               <div class="select-detalhe">
                 <v-select
@@ -63,31 +65,81 @@
                 </v-select>
               </div>
             </v-col>
+            <!-- Botão de descricao do produto -->
             <v-col class="d-flex justify-center btnInfo" lg="1">
-              <v-dialog v-model="infoItem">
-                <v-card>
-                  <div class="">
+              <div>
+                <!-- Descricao do produto -->
+                <v-btn icon>
+                  <v-tooltip id="idTooltip" activator="parent" location="top">
+                    {{ produto.nome }}
+                    <br />
                     {{ produto.descricao }}
+                    <br />
+                    Coleção: {{ produto.colecao }} | Linha: {{ produto.linha }} | Grupo:
+                    {{ produto.grupo }}
+                    <br />
+                    Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
+                    {{ produto.comprimento }} |
+                    <br />
+                    Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
+                  </v-tooltip>
+                  <v-icon>mdi-exclamation-thick</v-icon>
+                </v-btn>
+              </div>
+            </v-col>
+            <!-- Expandir imagem -->
+            <v-col class="d-flex justify-center btnInfo" lg="1">
+              <div>
+                <v-btn icon="mdi-magnify-expand" @click="expandirImg"></v-btn>
+              </div>
+              <v-dialog id="PesquisaItem" v-model="imgTelacheia">
+                <v-card>
+                  <div class="carousel-img">
+                    <v-carousel height="500" show-arrows="hover" hide-delimiter-background width="100%">
+                      <div>
+                        <v-carousel-item
+                          v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
+                          :key="imgId"
+                        >
+                          <v-sheet height="100%">
+                            <div>
+                              <v-img class="bg-grey-lighten-2" height="500" :src="detalhe.url" />
+                            </div>
+                          </v-sheet>
+                        </v-carousel-item>
+                      </div>
+                    </v-carousel>
                   </div>
                 </v-card>
               </v-dialog>
-              <div>
-                <v-btn icon="mdi-exclamation-thick" @click="informacao"></v-btn>
-              </div>
             </v-col>
-            <v-col class="d-flex justify-center btnInfo" lg="1">
-              <div>
-                <v-btn icon="mdi-magnify-expand" @click=""></v-btn>
-              </div>
-            </v-col>
-            
           </v-row>
-          
           <div class="page-footer">{{ index + 1 }}</div>
         </div>
       </div>
-      <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard"></div>
+      <!-- Ultima pagina -->
+      <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
+        <div id="ultimaPagina">
+          <div id="tituloCatalogo">Catalogo de Verão</div>
+          Obrigado por explorar nosso Catálogo de Verão!
+          <br />
+          Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
+          estação. Combinando sofisticação, conforto e praticidade, nossos móveis foram pensados
+          para oferecer a melhor experiência durante os dias mais quentes do ano. Se precisar de
+          mais informações ou quiser saber mais sobre como nossos produtos podem se encaixar no seu
+          ambiente, nossa equipe está à disposição para ajudar. Aproveite o verão com estilo e
+          conforto – porque cada momento merece ser vivido ao máximo!
+          <br /><br />
+          <div id="contato">
+            Empresa: {{ title }}
+            <br />
+            Telefone: (11) 9999-9999
+            <br />
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- Pesquisa de item -->
     <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
       <v-card>
         <v-autocomplete
@@ -104,17 +156,18 @@
         <v-btn @click="pesquisa">Fechar Pesquisa</v-btn>
       </v-card>
     </v-dialog>
+    <!-- Botões de navegação -->
     <v-row>
       <v-col class="d-flex justify-end">
-        <v-btn icon="mdi-arrow-left-bold" @click="antPag"></v-btn>
+        <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
       </v-col>
       <v-col class="d-flex justify-end">
-        <v-btn icon="mdi-home-outline" @click="selectPag(2)"></v-btn>
+        <v-btn icon="mdi-home-outline" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
       </v-col>
       <v-col class="d-flex justify-start">
-        <v-btn icon="mdi-magnify" @click="pesquisa"></v-btn>
+        <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-start" @click="proxPag">
+      <v-col class="d-flex justify-start" v-tooltip="'Próxima página'" @click="proxPag">
         <v-btn icon="mdi-arrow-right-bold"></v-btn>
       </v-col>
     </v-row>
@@ -131,10 +184,10 @@ const pageFlip = ref<PageFlip>()
 
 const filtroProdutos = ref<Produto[]>(props.produtos)
 const ativarPesquisa = ref(false)
-const infoItem = ref(false)
+const imgTelacheia = ref(false)
 
-const informacao = () => {
-  infoItem.value = !infoItem.value
+const expandirImg = () => {
+  imgTelacheia.value = !imgTelacheia.value
 }
 
 const pesquisa = () => {
@@ -205,13 +258,34 @@ function construirLivro() {
   })
 
   const pages = document.querySelectorAll('.page') as NodeListOf<HTMLElement>
-
   if (pages.length === 0) throw 'Nenhuma página encontrada'
+
   pageFlip.value.loadFromHTML(pages)
 }
 </script>
 
 <style>
+#ultimaPagina {
+  font-size: 15px;
+  text-align: center;
+}
+
+#contato {
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 50px;
+}
+
+#tituloCatalogo {
+  font-size: 25px;
+}
+#idTooltip {
+  border-radius: 8px; /* Borda arredondada */
+  text-align: center;
+}
 
 #PesquisaItem {
   width: 600px;
