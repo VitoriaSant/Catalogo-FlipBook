@@ -10,7 +10,8 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <Book :title="lista.empresa" :produtos="lista.produtos" v-if="lista.produtos.length > 0" />
+  <ListarCatalogos :catalogos="ListaCat.catalogos" v-if="ListaCat.catalogos.length > 0"/>
+  <!-- <Book :title="lista.empresa" :produtos="lista.produtos" v-if="lista.produtos.length > 0" /> -->
 </template>
 
 <script lang="ts" setup>
@@ -18,9 +19,12 @@ import { ref, onMounted } from 'vue'
 import { auth } from '../services/auth'
 import { getProdutos } from '../services/getProduto'
 import { ListaProduto } from '@/classes/produto'
+import { getMostruarios } from '@/services/getMostruarios'
+import { ListaCatalogos } from '@/classes/Catalogo'
 
 const loading = ref<boolean>(false)
 const lista = ref<ListaProduto>(new ListaProduto('', []))
+const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
 
 let alert = ref<boolean>(false)
 let mensagem = ''
@@ -41,11 +45,13 @@ function ordenarProdutos(produtos: any) {
     if (a.nome < b.nome) return -1
     if (a.nome > b.nome) return 1
 
-    return 0 
+    return 0
   })
 }
 
 onMounted(async () => {
+  ListaCat.value = await getMostruarios()
+  console.log(ListaCat.value.catalogos)
   try {
     loading.value = true
     if (!sessionStorage.getItem('auth_token')) {
@@ -60,7 +66,7 @@ onMounted(async () => {
       lista.value.produtos = ordenarProdutos(lista.value.produtos)
       console.log(lista.value)
     }
-  } catch (error:any) {
+  } catch (error: any) {
     if (error instanceof Error) {
       mensagem = error.name
     } else {
