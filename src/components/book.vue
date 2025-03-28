@@ -73,25 +73,29 @@
                   <v-tooltip id="idTooltip" activator="parent" location="top">
                     {{ produto.nome }}
                     <br />
-                    {{ produto.descricao }} 
+                    {{ produto.descricao }}
                     <template v-if="produto.colecao !== 'INDEFINIDA'">
                       <br />
-                      Coleção: {{ produto.colecao }} 
+                      Coleção: {{ produto.colecao }}
                     </template>
                     <template v-if="produto.linha !== 'INDEFINIDA'">
                       <br />
-                      Linha: {{ produto.linha }} 
+                      Linha: {{ produto.linha }}
                     </template>
                     <template v-if="produto.grupo !== 'INDEFINIDO'">
                       <br />
-                      Grupo: {{ produto.grupo }}  
-                    </template> 
-                    <template v-if="produto.altura !== 0  || produto.largura !== 0 || produto.comprimento !== 0"> 
+                      Grupo: {{ produto.grupo }}
+                    </template>
+                    <template
+                      v-if="
+                        produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
+                      "
+                    >
                       <br />
                       Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
-                    {{ produto.comprimento }} 
+                      {{ produto.comprimento }}
                     </template>
-                    <template v-if="produto.pesoBruto !== 0  || produto.pesoLiquido !== 0">
+                    <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
                       <br />
                       Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
                     </template>
@@ -109,7 +113,12 @@
                 <!-- Aqui a foto é trocada -->
                 <v-card>
                   <div class="carousel-img">
-                    <v-carousel height="500" show-arrows="hover" hide-delimiter-background width="100%">
+                    <v-carousel
+                      height="500"
+                      show-arrows="hover"
+                      hide-delimiter-background
+                      width="100%"
+                    >
                       <div>
                         <v-carousel-item
                           v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
@@ -117,7 +126,7 @@
                         >
                           <v-sheet height="100%">
                             <div>
-                              <span> {{produto}} </span>
+                              <span> {{ produto }} </span>
                               <v-img class="bg-grey-lighten-2" height="500" :src="detalhe.url" />
                             </div>
                           </v-sheet>
@@ -190,10 +199,10 @@
 </template>
 
 <script lang="ts" setup>
-import { Produto } from '@/classes/produto'
+import { Produto } from '@/classes/produtosCatalogo'
 import { PageFlip } from 'page-flip'
 
-const props = defineProps<{ title: string; produtos: Produto[] }>()
+const props = defineProps<{ catalogo: number; descricaoCatalago: string; empresa: number; empresaDescricao: string; produtos: Produto[] }>()
 const mostrarCapa = ref(true)
 const pageFlip = ref<PageFlip>()
 
@@ -203,9 +212,7 @@ const imgTelacheia = ref(false)
 
 const expandirImg = () => {
   imgTelacheia.value = !imgTelacheia.value
-    
 }
-
 
 const pesquisa = () => {
   ativarPesquisa.value = !ativarPesquisa.value
@@ -271,32 +278,28 @@ function construirLivro() {
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
     mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: true,
-
-    
+    disableFlipByClick: true
   })
-  
+
   const pages = document.querySelectorAll('.page') as NodeListOf<HTMLElement>
   if (pages.length === 0) throw 'Nenhuma página encontrada'
 
   pageFlip.value.loadFromHTML(pages)
 
-  
-  // Identifica o momento que o evento fold_corner acontece 
+  // Identifica o momento que o evento fold_corner acontece
   if (pageFlip.value) {
-        pageFlip.value.on("changeState", (state) => {
-          if (state.data === "fold_corner") {
-            console.log("Evento de dobrar canto da página");
-            //state.preventDefault?.(); 
-            return;
-          }
-        });
+    pageFlip.value.on('changeState', (state) => {
+      if (state.data === 'fold_corner') {
+        console.log('Evento de dobrar canto da página')
+        state.isHandled = true; // Se a biblioteca suportar esta abordagem
+        return;
       }
+    })
+  }
 }
 </script>
 
 <style>
-
 #ultimaPagina {
   font-size: 15px;
   text-align: center;

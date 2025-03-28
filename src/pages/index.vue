@@ -11,19 +11,26 @@
     </v-card>
   </v-dialog>
   <ListarCatalogos :catalogos="ListaCat.catalogos" v-if="ListaCat.catalogos.length > 0"/>
-  <!-- <Book :title="lista.empresa" :produtos="lista.produtos" v-if="lista.produtos.length > 0" /> -->
+  
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { auth } from '../services/auth'
-import { getProdutos } from '../services/getProduto'
-import { ListaProduto } from '@/classes/produto'
+// import { auth } from '../services/auth'
+
+// import { getProdutos } from '../services/getProduto'
+// import { ListaProduto } from '@/classes/produto'
+// import { getProdutos } from '../services/getitens'
+// import { ListaProduto } from '@/classes/produtosCatalogo'
+
 import { getMostruarios } from '@/services/getMostruarios'
 import { ListaCatalogos } from '@/classes/Catalogo'
 
 const loading = ref<boolean>(false)
-const lista = ref<ListaProduto>(new ListaProduto('', []))
+
+// const lista = ref<ListaProduto>(new ListaProduto('', []))
+// const lista = ref<ListaProduto>(new ListaProduto(0,'',0,'', []))
+
 const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
 
 let alert = ref<boolean>(false)
@@ -36,48 +43,53 @@ const recarregar = () => {
   location.reload()
 }
 
-function ordenarProdutos(produtos: any) {
-  return produtos.sort((a: any, b: any) => {
-    // // Ordena primeiro pelo 'grupo'
-    // if (a.grupo < b.grupo) return -1
-    // if (a.grupo > b.grupo) return 1
+// function ordenarProdutos(produtos: any) {
+//   return produtos.sort((a: any, b: any) => {
+//     // // Ordena primeiro pelo 'grupo'
+//     // if (a.grupo < b.grupo) return -1
+//     // if (a.grupo > b.grupo) return 1
 
-    if (a.nome < b.nome) return -1
-    if (a.nome > b.nome) return 1
+//     if (a.nome < b.nome) return -1
+//     if (a.nome > b.nome) return 1
 
-    return 0
-  })
-}
+//     return 0
+//   })
+// }
 
 onMounted(async () => {
+  loading.value = true
   ListaCat.value = await getMostruarios()
-  console.log(ListaCat.value.catalogos)
-  try {
-    loading.value = true
-    if (!sessionStorage.getItem('auth_token')) {
-      await auth()
-    }
+  loading.value = false
 
-    const token = sessionStorage.getItem('auth_token')
-    if (!token) {
-      mensagem = 'Token não encontrado.'
-    } else {
-      lista.value = await getProdutos(token)
-      lista.value.produtos = ordenarProdutos(lista.value.produtos)
-      console.log(lista.value)
-    }
-  } catch (error: any) {
-    if (error instanceof Error) {
-      mensagem = error.name
-    } else {
-      tituloErro = String(error.error.name)
-      mensagem = String(error.messageError + ' : ' + error.error.message)
-    }
-    alert.value = true
-    throw error
-  } finally {
-    loading.value = false
-  }
+  // lista.value = await getProdutos(1)
+  // console.log(lista.value)
+  
+  // try {
+  //   loading.value = true
+  //   if (!sessionStorage.getItem('auth_token')) {
+  //     await auth()
+  //   }
+
+  //   const token = sessionStorage.getItem('auth_token')
+  //   if (!token) {
+  //     mensagem = 'Token não encontrado.'
+  //   } else {
+  //     lista.value = await getProdutos(token)
+  //     lista.value.produtos = ordenarProdutos(lista.value.produtos)
+  //     console.log(lista.value)
+  //   }
+  // } catch (error: any) {
+  //   if (error instanceof Error) {
+  //     mensagem = error.name
+  //   } else {
+  //     tituloErro = String(error.error.name)
+  //     mensagem = String(error.messageError + ' : ' + error.error.message)
+  //   }
+  //   alert.value = true
+  //   throw error
+  // } finally {
+  //   loading.value = false
+  // }
 })
 </script>
 <style>

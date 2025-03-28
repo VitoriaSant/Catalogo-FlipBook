@@ -20,7 +20,7 @@ export interface Videos{}
 
 export class Produto {
     item: number
-    // nome: string
+    //nome: string
     descricao: string
     tipoProduto: string
     unidade: string
@@ -43,7 +43,7 @@ export class Produto {
 
     constructor(pObjeto: Produto) {
         this.item = pObjeto.item
-        // this.nome = pObjeto.nome
+        //this.nome = pObjeto.nome
         this.descricao = pObjeto.descricao
         this.tipoProduto = pObjeto.tipoProduto
         this.unidade = pObjeto.unidade
