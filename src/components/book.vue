@@ -1,5 +1,5 @@
-<template>
-  <div class="container">
+<template >
+  <div class="container" v-if="ocutarLivro === false">
     <!-- <span class="page-orientation">  </span> -->
     <div class="flip-book" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
@@ -185,16 +185,19 @@
       <v-col class="d-flex justify-end">
         <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-end">
-        <v-btn icon="mdi-home-outline" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
-      </v-col>
-      <v-col class="d-flex justify-start">
+      <v-col class="d-flex justify-center" id="botoesDeNavegacao">
+        <v-btn icon="mdi-home-outline" v-tooltip="'Mostruários'" @click="mostruario"></v-btn>
+        <v-btn icon="mdi-format-list-numbered-rtl" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
         <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
       </v-col>
       <v-col class="d-flex justify-start" v-tooltip="'Próxima página'" @click="proxPag">
         <v-btn icon="mdi-arrow-right-bold"></v-btn>
       </v-col>
     </v-row>
+  </div>
+  <!-- Abrir mostruario -->
+  <div v-if="listarMostruarios">
+    <listarCatalogos />
   </div>
 </template>
 
@@ -209,6 +212,13 @@ const pageFlip = ref<PageFlip>()
 const filtroProdutos = ref<Produto[]>(props.produtos)
 const ativarPesquisa = ref(false)
 const imgTelacheia = ref(false)
+const listarMostruarios = ref<boolean>(false)
+const ocutarLivro = ref<boolean>(false)
+
+const mostruario = () => {
+  listarMostruarios.value = true
+  ocutarLivro.value = true 
+}
 
 const expandirImg = () => {
   imgTelacheia.value = !imgTelacheia.value
@@ -291,7 +301,7 @@ function construirLivro() {
     pageFlip.value.on('changeState', (state) => {
       if (state.data === 'fold_corner') {
         console.log('Evento de dobrar canto da página')
-        state.isHandled = true; // Se a biblioteca suportar esta abordagem
+        
         return;
       }
     })
@@ -300,6 +310,10 @@ function construirLivro() {
 </script>
 
 <style>
+#botoesDeNavegacao {
+  gap: 10px;
+}
+
 #ultimaPagina {
   font-size: 15px;
   text-align: center;

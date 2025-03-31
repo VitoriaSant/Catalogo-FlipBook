@@ -10,8 +10,7 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <ListarCatalogos :catalogos="ListaCat.catalogos" v-if="ListaCat.catalogos.length > 0"/>
-  
+  <ListarCatalogos />
 </template>
 
 <script lang="ts" setup>
@@ -23,15 +22,15 @@ import { ref, onMounted } from 'vue'
 // import { getProdutos } from '../services/getitens'
 // import { ListaProduto } from '@/classes/produtosCatalogo'
 
-import { getMostruarios } from '@/services/getMostruarios'
-import { ListaCatalogos } from '@/classes/Catalogo'
+// import { getMostruarios } from '@/services/getMostruarios'
+// import { ListaCatalogos } from '@/classes/Catalogo'
 
 const loading = ref<boolean>(false)
 
 // const lista = ref<ListaProduto>(new ListaProduto('', []))
 // const lista = ref<ListaProduto>(new ListaProduto(0,'',0,'', []))
 
-const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
+// const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
 
 let alert = ref<boolean>(false)
 let mensagem = ''
@@ -56,14 +55,14 @@ const recarregar = () => {
 //   })
 // }
 
-onMounted(async () => {
-  loading.value = true
-  ListaCat.value = await getMostruarios()
-  loading.value = false
+// onMounted(async () => {
+//   loading.value = true
+//   ListaCat.value = await getMostruarios()
+//   loading.value = false
 
   // lista.value = await getProdutos(1)
   // console.log(lista.value)
-  
+
   // try {
   //   loading.value = true
   //   if (!sessionStorage.getItem('auth_token')) {
@@ -90,7 +89,7 @@ onMounted(async () => {
   // } finally {
   //   loading.value = false
   // }
-})
+// })
 </script>
 <style>
 #loading {
