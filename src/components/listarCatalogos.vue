@@ -1,4 +1,14 @@
 <template>
+  <v-dialog v-model="alert" max-width="500">
+    <v-card>
+      <v-card-title>{{ tituloErro }}</v-card-title>
+      <v-card-text>{{ mensagem }}</v-card-text>
+      <v-card-actions>
+        <v-btn color="error" @click="recarregar">Recarregar</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <div id="tabela" v-if="ListaCat.catalogos.length > 1">
     <v-table v-if="listaMostruarios">
       <thead>
@@ -20,23 +30,21 @@
   <!-- <div v-else-="mostruariosSelecionado(filtroMostruarios[0].catalogo)">
   {{ filtroMostruarios[0].catalogo }}
   </div> -->
-    <v-progreifss-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
-    <Book
-      :catalogo="lista.catalogo"
-      :descricaoCatalago="lista.descricaoCatalago"
-      :empresa="lista.empresa"
-      :empresaDescricao="lista.empresaDescricao"
-      :produtos="lista.produtos"
-      v-if="lista.produtos.length > 0 && abrirMostruarios === true"	
-    />
-  
+  <v-progreifss-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
+  <Book
+    :catalogo="lista.catalogo"
+    :descricaoCatalago="lista.descricaoCatalago"
+    :empresa="lista.empresa"
+    :empresaDescricao="lista.empresaDescricao"
+    :produtos="lista.produtos"
+    v-if="lista.produtos.length > 0 && abrirMostruarios === true"
+  />
 </template>
 
 <script lang="ts" setup>
 import { Catalogo } from '@/classes/Catalogo'
 import { getProdutos } from '../services/getitens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
-
 import { getMostruarios } from '@/services/getMostruarios'
 import { ListaCatalogos } from '@/classes/Catalogo'
 
@@ -46,18 +54,30 @@ const lista = ref<ListaProduto>(new ListaProduto(0, '', 0, '', []))
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const abrirMostruarios = ref<boolean>(false)
-
 const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
 
+let alert = ref<boolean>(false)
+let mensagem = ''
+let tituloErro = ''
+
+const recarregar = () => {
+  alert.value = false
+  location.reload()
+}
+
 async function mostruariosSelecionado(idostruarios: number) {
-  console.log("entrou")
-  listaMostruarios.value = false
-  abrirMostruarios.value = true
-  console.log(abrirMostruarios.value)
-  loading.value = true
-  lista.value = await getProdutos(idostruarios)
-  lista.value.produtos = ordenarProdutos(lista.value.produtos)
-  loading.value = false
+  try {
+    listaMostruarios.value = false
+    abrirMostruarios.value = true
+    loading.value = true
+    lista.value = await getProdutos(idostruarios)
+    lista.value.produtos = ordenarProdutos(lista.value.produtos)
+    loading.value = false
+  } catch (error: any) {
+    tituloErro = String(error.error.name)
+    mensagem = String(JSON.stringify(error.error.response.data) + ' - ' + error.error.message)
+    alert.value = true
+  }
 }
 
 // Função para ordenar os produtos por nome
@@ -72,21 +92,21 @@ function ordenarProdutos(produtos: any) {
 
     return 0
   })
-
 }
 
-
 onMounted(async () => {
-  loading.value = true
-  ListaCat.value = await getMostruarios()
-  loading.value = false
-
-  console.log(ListaCat.value)
+  try {
+    loading.value = true
+    ListaCat.value = await getMostruarios()
+    loading.value = false
+  } catch (error: any) {
+    console.log(error.message)
+    tituloErro = String(error.error.name)
+    mensagem = String(error.messageError + ' : ' + error.error.message)
+  }
 })
-
 </script>
 <style>
-
 #loading {
   position: fixed;
   top: 50%;
