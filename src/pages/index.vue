@@ -19,11 +19,6 @@ let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
-const recarregar = () => {
-  alert.value = false
-  location.reload()
-}
-
 onMounted(async () => {
   try {
     loading.value = true

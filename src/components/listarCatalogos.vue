@@ -5,14 +5,18 @@
     <v-table v-if="listaMostruarios">
       <thead>
         <tr>
+          <th class="text-center">Códigos</th>
           <th class="text-center">Mostruários</th>
+          <th class="text-center">Ações</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id">
-          <td>
-            <v-btn @click="mostruariosSelecionado(catalogo.catalogo)">
-              {{ catalogo.catalogo }} - {{ catalogo.descricaoCatalago }}
+          <td class="text-center">{{ catalogo.catalogo }}</td>
+          <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
+          <td class="text-center">
+            <v-btn @click="mostruariosSelecionado(catalogo.catalogo)" icon="mdi-book-open-page-variant-outline">
+              
             </v-btn>
           </td>
         </tr>
@@ -43,7 +47,7 @@
 
 <script lang="ts" setup>
 import { Catalogo } from '@/classes/catalogo'
-import { getProdutos } from '../services/getitens'
+import { getProdutos } from '../services/getItens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
 import { getMostruarios } from '@/services/getMostruarios'
 import { ListaCatalogos } from '@/classes/catalogo'
@@ -97,8 +101,8 @@ onMounted(async () => {
     loading.value = true
     ListaCat.value = await getMostruarios()
     loading.value = false
-    if (ListaCat.catalogos.length == 1) {
-      consolo.log('tem 1')
+    if (ListaCat.value.catalogos.length == 1) {
+      console.log('tem 1')
     }
   } catch (error: any) {
     console.log(error.message)
@@ -115,4 +119,17 @@ onMounted(async () => {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+table {
+    max-width: 95%;
+    margin: auto;
+    margin-top: 2%;
+    border-radius: 8px;
+    margin-bottom: 10%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+table tr:nth-child(even), thead {
+  background-color: #eeeeeefc;
+}
+
+  
 </style>
