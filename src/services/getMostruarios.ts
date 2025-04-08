@@ -1,4 +1,4 @@
-import { Catalogo, ListaCatalogos } from '@/classes/Catalogo'
+import { Catalogo, ListaCatalogos } from '@/classes/catalogo'
 import { api } from '@/services/api'
 
 interface ListaResposta {

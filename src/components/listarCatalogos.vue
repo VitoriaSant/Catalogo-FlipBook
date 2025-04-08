@@ -1,15 +1,7 @@
 <template>
-  <v-dialog v-model="alert" max-width="500">
-    <v-card>
-      <v-card-title>{{ tituloErro }}</v-card-title>
-      <v-card-text>{{ mensagem }}</v-card-text>
-      <v-card-actions>
-        <v-btn color="error" @click="recarregar">Recarregar</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
-  <div id="tabela" v-if="ListaCat.catalogos.length > 1">
+  <div id="tabela" v-if="ListaCat.catalogos.length > 0">
     <v-table v-if="listaMostruarios">
       <thead>
         <tr>
@@ -27,8 +19,16 @@
       </tbody>
     </v-table>
   </div>
-  <!-- <div v-else-="mostruariosSelecionado(filtroMostruarios[0].catalogo)">
-  {{ filtroMostruarios[0].catalogo }}
+  <!-- <div v-else="mostruariosSelecionado(ListaCat.catalogos[0].catalogo)">
+  {{ ListaCat.catalogos[0].catalogo }}
+  </div> -->
+  <!-- <div v-else>
+    <template v-if="ListaCat.catalogos?.length">
+      <v-btn @click="mostruariosSelecionado(ListaCat.catalogos[0].catalogo)">
+        {{ ListaCat.catalogos[0]?.catalogo }} - {{ ListaCat.catalogos[0]?.descricaoCatalago }}
+      </v-btn>
+    </template>
+    <p v-else>Nenhum catálogo encontrado.</p>
   </div> -->
   <v-progreifss-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Book
@@ -42,11 +42,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Catalogo } from '@/classes/Catalogo'
+import { Catalogo } from '@/classes/catalogo'
 import { getProdutos } from '../services/getitens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
 import { getMostruarios } from '@/services/getMostruarios'
-import { ListaCatalogos } from '@/classes/Catalogo'
+import { ListaCatalogos } from '@/classes/catalogo'
+import Alerta from '@/components/alert.vue'
 
 // const props = defineProps<{ catalogos: Catalogo[] }>()
 // const filtroMostruarios = ref<Catalogo[]>(props.catalogos)
@@ -60,10 +61,6 @@ let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
-const recarregar = () => {
-  alert.value = false
-  location.reload()
-}
 
 async function mostruariosSelecionado(idostruarios: number) {
   try {
@@ -74,8 +71,9 @@ async function mostruariosSelecionado(idostruarios: number) {
     lista.value.produtos = ordenarProdutos(lista.value.produtos)
     loading.value = false
   } catch (error: any) {
+    loading.value = false
     tituloErro = String(error.error.name)
-    mensagem = String(JSON.stringify(error.error.response.data) + ' - ' + error.error.message)
+    mensagem = String(JSON.stringify(error.error.response.data.error) + ' - ' + error.error.message)
     alert.value = true
   }
 }
@@ -99,6 +97,9 @@ onMounted(async () => {
     loading.value = true
     ListaCat.value = await getMostruarios()
     loading.value = false
+    if (ListaCat.catalogos.length == 1) {
+      consolo.log('tem 1')
+    }
   } catch (error: any) {
     console.log(error.message)
     tituloErro = String(error.error.name)

@@ -1,7 +1,7 @@
 <template >
   <div class="container" v-if="ocutarLivro === false">
     <!-- <span class="page-orientation">  </span> -->
-    <div class="flip-book" id="demoBookExample">
+    <div class="flip-book" style="background-color: blueviolet; padding-top: -100px;" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div>
           <h2>{{ title }}</h2>
@@ -197,13 +197,14 @@
   </div>
   <!-- Abrir mostruario -->
   <div v-if="listarMostruarios">
-    <listarCatalogos />
+    <index />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Produto } from '@/classes/produtosCatalogo'
 import { PageFlip } from 'page-flip'
+import index from '@/pages/index.vue'
 
 const props = defineProps<{ catalogo: number; descricaoCatalago: string; empresa: number; empresaDescricao: string; produtos: Produto[] }>()
 const mostrarCapa = ref(true)
@@ -364,6 +365,7 @@ function construirLivro() {
   text-align: left;
 }
 
+
 .btnInfo {
   margin-top: 1%;
 }
@@ -395,7 +397,9 @@ function construirLivro() {
   color: hsl(0, 0%, 0%);
   border: solid 1px hsl(244, 25%, 79%);
   overflow: hidden;
-}
+  
+
+  } 
 
 .page img {
   width: 500px;
@@ -405,7 +409,7 @@ function construirLivro() {
   flex-grow: 1;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  font-size: 80%;
+  font-size: 100%;
   text-align: justify;
 
   box-sizing: border-box;
@@ -475,7 +479,7 @@ function construirLivro() {
 }
 
 .page.page-cover.page-cover-top {
-  box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(36, 10, 3, 0.5);
 }
 
 .page.page-cover.page-cover-bottom {
