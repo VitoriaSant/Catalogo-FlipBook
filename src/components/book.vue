@@ -4,7 +4,7 @@
     <div class="flip-book" style="background-color: blueviolet; padding-top: -100px;" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div>
-          <h2>{{ title }}</h2>
+          <h2>{{ props.empresaDescricao }}</h2>
         </div>
       </div>
     </div>
@@ -23,7 +23,7 @@
               "
             >
               <div id="text-opc-sumario">
-                {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ produto.nome }}
+                {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ "Nome do Produto" }}
               </div>
             </v-btn>
           </p>
@@ -32,7 +32,8 @@
       <!-- Pagina de produtos -->
       <div class="page" v-for="(produto, index) in filtroProdutos">
         <div class="page-content">
-          <h1 class="page-header">{{ produto.nome }}</h1>
+          <h1 class="page-header">{{ "Nome do Produto" }}</h1>
+          <!-- Imagem do Produto -->
           <div class="carousel-img">
             <v-carousel height="500" show-arrows="hover" hide-delimiter-background width="100%">
               <div>
@@ -71,7 +72,7 @@
                 <!-- Descricao do produto -->
                 <v-btn icon>
                   <v-tooltip id="idTooltip" activator="parent" location="top">
-                    {{ produto.nome }}
+                    {{ "Nome do Produto" }}
                     <br />
                     {{ produto.descricao }}
                     <template v-if="produto.colecao !== 'INDEFINIDA'">
@@ -107,39 +108,43 @@
             <!-- Expandir imagem -->
             <v-col class="d-flex justify-center btnInfo" lg="1">
               <div>
-                <v-btn icon="mdi-magnify-expand" @click="expandirImg"></v-btn>
+                <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn> 
               </div>
-              <v-dialog v-model="imgTelacheia">
-                <!-- Aqui a foto é trocada -->
-                <v-card>
-                  <div class="carousel-img">
-                    <v-carousel
-                      height="500"
-                      show-arrows="hover"
-                      hide-delimiter-background
-                      width="100%"
-                    >
-                      <div>
-                        <v-carousel-item
-                          v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
-                          :key="imgId"
-                        >
-                          <v-sheet height="100%">
-                            <div>
-                              <span> {{ produto }} </span>
-                              <v-img class="bg-grey-lighten-2" height="500" :src="detalhe.url" />
-                            </div>
-                          </v-sheet>
-                        </v-carousel-item>
-                      </div>
-                    </v-carousel>
-                  </div>
-                </v-card>
-              </v-dialog>
             </v-col>
           </v-row>
           <div class="page-footer">{{ index + 1 }}</div>
-        </div>
+        </div> 
+        <!-- Imagem em tela cheia             -->
+        <v-dialog v-model="imgTelacheia" fullscreen>
+          <template v-if="produtoSelecionado">
+            
+            <v-carousel
+              height="100vh"
+              width="100vw"
+              show-arrows="hover"
+              hide-delimiter-background
+            >
+              <v-carousel-item
+                v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens"
+                :key="imgId"
+              >
+              <div><v-btn icon="mdi-close" @click="imgTelacheia = false" id="btnTelaCheia"></v-btn></div>
+                <v-sheet
+                  height="100%"
+                  width="100%"
+                  class="d-flex align-center justify-center"
+                  id ="sheetTelaCheia"
+                >  
+                  <img
+                    id="ImgExpandida"
+                    :src="detalhe.url"
+                    alt="Imagem do produto"
+                  />
+                </v-sheet>
+              </v-carousel-item>
+            </v-carousel>
+          </template>
+        </v-dialog>
       </div>
       <!-- Ultima pagina -->
       <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
@@ -155,7 +160,7 @@
           conforto – porque cada momento merece ser vivido ao máximo!
           <br /><br />
           <div id="contato">
-            Empresa: {{ title }}
+            Empresa: {{ props.empresaDescricao }}
             <br />
             Telefone: (11) 9999-9999
             <br />
@@ -215,14 +220,16 @@ const ativarPesquisa = ref(false)
 const imgTelacheia = ref(false)
 const listarMostruarios = ref<boolean>(false)
 const ocutarLivro = ref<boolean>(false)
+const produtoSelecionado = ref<Produto>({} as Produto)
 
 const mostruario = () => {
   listarMostruarios.value = true
   ocutarLivro.value = true 
 }
 
-const expandirImg = () => {
-  imgTelacheia.value = !imgTelacheia.value
+const expandirImg = (produto) => {
+  produtoSelecionado.value = produto
+  imgTelacheia.value = true
 }
 
 const pesquisa = () => {
@@ -311,6 +318,27 @@ function construirLivro() {
 </script>
 
 <style>
+.img-contain img {
+  object-fit: contain !important;
+}
+#btnTelaCheia{
+  position: absolute;
+  top: 16px; 
+  right: 16px; 
+  z-index: 10;
+}
+
+#ImgExpandida {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+#sheetTelaCheia {
+  background-color: #00000067;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
 #botoesDeNavegacao {
   gap: 10px;
 }

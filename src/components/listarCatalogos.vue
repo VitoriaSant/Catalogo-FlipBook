@@ -15,8 +15,7 @@
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
           <td class="text-center">
-            <v-btn @click="mostruariosSelecionado(catalogo.catalogo)" icon="mdi-book-open-page-variant-outline">
-              
+            <v-btn icon="mdi-book-open-page-variant-outline" @click="mostruariosSelecionado(catalogo.catalogo)" >
             </v-btn>
           </td>
         </tr>
@@ -72,7 +71,9 @@ async function mostruariosSelecionado(idostruarios: number) {
     abrirMostruarios.value = true
     loading.value = true
     lista.value = await getProdutos(idostruarios)
+    console.log(lista.value)
     lista.value.produtos = ordenarProdutos(lista.value.produtos)
+    // console.log(lista.value)
     loading.value = false
   } catch (error: any) {
     loading.value = false
