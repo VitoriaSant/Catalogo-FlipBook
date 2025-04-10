@@ -23,8 +23,7 @@ export async function getProdutos(idMostruario: number): Promise<ListaProduto> {
             ${idMostruario}&apenasItensComImagens=${idMostruario}`,
         })
 
-        const lista = new ListaProduto(0,'',0,'',[])
-        // lista.empresa = data.titulo
+        const lista = new ListaProduto(data.catalogo,data.descricaoCatalago,data.empresa,data.empresaDescricao,[])
 
         for (const registro of data.itens) {
             lista.produtos.push(new Produto(registro))

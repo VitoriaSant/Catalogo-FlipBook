@@ -3,8 +3,9 @@
     <!-- <span class="page-orientation">  </span> -->
     <div class="flip-book" style="background-color: blueviolet; padding-top: -100px;" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
-        <div>
-          <h2>{{ props.empresaDescricao }}</h2>
+        <div id="capaCatalogo">
+          <h2>{{ props.descricaoCatalago }}</h2>
+          <h3>{{ props.empresaDescricao }}</h3>
         </div>
       </div>
     </div>
@@ -52,7 +53,7 @@
           </div>
           <v-row>
             <!-- Seleçao de detalhamento -->
-            <v-col class="d-flex justify-end" lg="10">
+            <v-col class="d-flex" lg="8">
               <div class="select-detalhe">
                 <v-select
                   density="compact"
@@ -67,7 +68,8 @@
               </div>
             </v-col>
             <!-- Botão de descricao do produto -->
-            <v-col class="d-flex justify-center btnInfo" lg="1">
+            
+            <v-col class="d-flex justify-end btnInfo" lg="2" >
               <div>
                 <!-- Descricao do produto -->
                 <v-btn icon>
@@ -106,7 +108,7 @@
               </div>
             </v-col>
             <!-- Expandir imagem -->
-            <v-col class="d-flex justify-center btnInfo" lg="1">
+            <v-col class="d-flex justify-start btnInfo" lg="2">
               <div>
                 <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn> 
               </div>
@@ -227,7 +229,7 @@ const mostruario = () => {
   ocutarLivro.value = true 
 }
 
-const expandirImg = (produto) => {
+const expandirImg = (produto:any) => {
   produtoSelecionado.value = produto
   imgTelacheia.value = true
 }
@@ -318,9 +320,7 @@ function construirLivro() {
 </script>
 
 <style>
-.img-contain img {
-  object-fit: contain !important;
-}
+
 #btnTelaCheia{
   position: absolute;
   top: 16px; 
@@ -392,7 +392,16 @@ function construirLivro() {
   word-wrap: break-word;
   text-align: left;
 }
+.capaCatalogo {
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+  width: 100%;
+}
 
+.img-contain img {
+  object-fit: contain !important;
+}
 
 .btnInfo {
   margin-top: 1%;
@@ -504,6 +513,9 @@ function construirLivro() {
   text-align: center;
   padding-top: 50%;
   font-size: 210%;
+}
+h3 {
+  text-align: center;
 }
 
 .page.page-cover.page-cover-top {

@@ -1,6 +1,7 @@
 <template>
-  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
+
   <div id="tabela" v-if="ListaCat.catalogos.length > 0">
     <v-table v-if="listaMostruarios">
       <thead>
@@ -15,13 +16,17 @@
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
           <td class="text-center">
-            <v-btn icon="mdi-book-open-page-variant-outline" @click="mostruariosSelecionado(catalogo.catalogo)" >
+            <v-btn
+              icon="mdi-book-open-page-variant-outline"
+              @click="mostruariosSelecionado(catalogo.catalogo)"
+            >
             </v-btn>
           </td>
         </tr>
       </tbody>
     </v-table>
   </div>
+
   <!-- <div v-else="mostruariosSelecionado(ListaCat.catalogos[0].catalogo)">
   {{ ListaCat.catalogos[0].catalogo }}
   </div> -->
@@ -33,7 +38,7 @@
     </template>
     <p v-else>Nenhum catálogo encontrado.</p>
   </div> -->
-  <v-progreifss-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
+  <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Book
     :catalogo="lista.catalogo"
     :descricaoCatalago="lista.descricaoCatalago"
@@ -48,32 +53,26 @@
 import { Catalogo } from '@/classes/catalogo'
 import { getProdutos } from '../services/getItens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
-import { getMostruarios } from '@/services/getMostruarios'
-import { ListaCatalogos } from '@/classes/catalogo'
 import Alerta from '@/components/alert.vue'
 
-// const props = defineProps<{ catalogos: Catalogo[] }>()
-// const filtroMostruarios = ref<Catalogo[]>(props.catalogos)
+const props = defineProps<{ catalogos: Catalogo[] }>()
 const lista = ref<ListaProduto>(new ListaProduto(0, '', 0, '', []))
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const abrirMostruarios = ref<boolean>(false)
-const ListaCat = ref<ListaCatalogos>(new ListaCatalogos([]))
+const ListaCat = computed(() => ({ catalogos: props.catalogos }))
 
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
-
-async function mostruariosSelecionado(idostruarios: number) {
+async function mostruariosSelecionado(idMostruarios: number) {
   try {
     listaMostruarios.value = false
     abrirMostruarios.value = true
     loading.value = true
-    lista.value = await getProdutos(idostruarios)
-    console.log(lista.value)
+    lista.value = await getProdutos(idMostruarios)
     lista.value.produtos = ordenarProdutos(lista.value.produtos)
-    // console.log(lista.value)
     loading.value = false
   } catch (error: any) {
     loading.value = false
@@ -96,21 +95,6 @@ function ordenarProdutos(produtos: any) {
     return 0
   })
 }
-
-onMounted(async () => {
-  try {
-    loading.value = true
-    ListaCat.value = await getMostruarios()
-    loading.value = false
-    if (ListaCat.value.catalogos.length == 1) {
-      console.log('tem 1')
-    }
-  } catch (error: any) {
-    console.log(error.message)
-    tituloErro = String(error.error.name)
-    mensagem = String(error.messageError + ' : ' + error.error.message)
-  }
-})
 </script>
 <style>
 #loading {
@@ -121,16 +105,15 @@ onMounted(async () => {
   text-align: center;
 }
 table {
-    max-width: 95%;
-    margin: auto;
-    margin-top: 2%;
-    border-radius: 8px;
-    margin-bottom: 10%;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-  }
-table tr:nth-child(even), thead {
+  max-width: 95%;
+  margin: auto;
+  margin-top: 2%;
+  border-radius: 8px;
+  margin-bottom: 10%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+table tr:nth-child(even),
+thead {
   background-color: #eeeeeefc;
 }
-
-  
 </style>
