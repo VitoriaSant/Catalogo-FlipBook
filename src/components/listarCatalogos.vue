@@ -8,20 +8,14 @@
         <tr>
           <th class="text-center">Códigos</th>
           <th class="text-center">Mostruários</th>
-          <th class="text-center">Ações</th>
+          
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id">
+        <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id"  @click="mostruariosSelecionado(catalogo.catalogo)">
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
-          <td class="text-center">
-            <v-btn
-              icon="mdi-book-open-page-variant-outline"
-              @click="mostruariosSelecionado(catalogo.catalogo)"
-            >
-            </v-btn>
-          </td>
+          
         </tr>
       </tbody>
     </v-table>
@@ -104,6 +98,19 @@ function ordenarProdutos(produtos: any) {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+/* table {
+  max-width: 95%;
+  margin: auto;
+  margin-top: 2%;
+  border-radius: 8px;
+  margin-bottom: 10%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+
+}
+table tr:nth-child(even),
+thead {
+  background-color: #eeeeeefc;
+} */
 table {
   max-width: 95%;
   margin: auto;
@@ -111,9 +118,19 @@ table {
   border-radius: 8px;
   margin-bottom: 10%;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border-collapse: collapse;
 }
+
 table tr:nth-child(even),
 thead {
-  background-color: #eeeeeefc;
+  background-color: #eeeeeefc; /*linhas com cores intercaladas */
+  border-radius: 8px; /* bordas arredondadas */  
 }
+
+table tbody tr:hover {
+  background-color: #adacac; /* azul bem claro */
+  transform: scale(1.01); /* leve efeito de zoom */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* sombra leve na linha */
+}
+
 </style>

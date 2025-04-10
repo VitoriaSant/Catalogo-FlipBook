@@ -151,7 +151,7 @@
       <!-- Ultima pagina -->
       <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
-          <div id="tituloCatalogo">Catalogo de Verão</div>
+          <div id="tituloCatalogo">{{ props.descricaoCatalago }}</div>
           Obrigado por explorar nosso Catálogo de Verão!
           <br />
           Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
