@@ -72,39 +72,40 @@
             <v-col class="d-flex justify-end btnInfo" lg="2" >
               <div>
                 <!-- Descricao do produto -->
-                <v-btn icon>
-                  <v-tooltip id="idTooltip" activator="parent" location="top">
-                    {{ "Nome do Produto" }}
-                    <br />
-                    {{ produto.descricao }}
-                    <template v-if="produto.colecao !== 'INDEFINIDA'">
-                      <br />
-                      Coleção: {{ produto.colecao }}
-                    </template>
-                    <template v-if="produto.linha !== 'INDEFINIDA'">
-                      <br />
-                      Linha: {{ produto.linha }}
-                    </template>
-                    <template v-if="produto.grupo !== 'INDEFINIDO'">
-                      <br />
-                      Grupo: {{ produto.grupo }}
-                    </template>
-                    <template
-                      v-if="
-                        produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
-                      "
-                    >
-                      <br />
-                      Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
-                      {{ produto.comprimento }}
-                    </template>
-                    <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
-                      <br />
-                      Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
-                    </template>
-                  </v-tooltip>
-                  <v-icon>mdi-exclamation-thick</v-icon>
-                </v-btn>
+                <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento"></v-btn>                    
+                    <v-dialog id="PesquisaItem" v-model="descDetalhe">
+                      <v-card>
+                        {{ "Nome do Produto" }}
+                        <br />
+                        {{ produto.descricao }}
+                        <template v-if="produto.colecao !== 'INDEFINIDA'">
+                          <br />
+                          Coleção: {{ produto.colecao }}
+                        </template>
+                        <template v-if="produto.linha !== 'INDEFINIDA'">
+                          <br />
+                          Linha: {{ produto.linha }}
+                        </template>
+                        <template v-if="produto.grupo !== 'INDEFINIDO'">
+                          <br />
+                          Grupo: {{ produto.grupo }}
+                        </template>
+                        <template
+                          v-if="
+                            produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
+                          "
+                        >
+                          <br />
+                          Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
+                          {{ produto.comprimento }}
+                        </template>
+                        <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
+                          <br />
+                          Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
+                        </template>
+                      </v-card>
+                    </v-dialog>
+                
               </div>
             </v-col>
             <!-- Expandir imagem -->
@@ -223,6 +224,12 @@ const imgTelacheia = ref(false)
 const listarMostruarios = ref<boolean>(false)
 const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
+const descDetalhe = ref<boolean>(false)
+
+const exibirDetalhamento = () => {
+  descDetalhe.value = !descDetalhe.value
+}
+
 
 const mostruario = () => {
   listarMostruarios.value = true
@@ -366,7 +373,7 @@ function construirLivro() {
 }
 
 #PesquisaItem {
-  width: 600px;
+  text-align: center;
 }
 
 #demoBookExample {
