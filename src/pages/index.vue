@@ -6,7 +6,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-
 import { getMostruarios } from '@/services/getMostruarios'
 import { ListaCatalogos } from '@/classes/catalogo'
 import Alerta from '@/components/alert.vue'
@@ -20,16 +19,24 @@ let mensagem = ''
 let tituloErro = ''
 
 onMounted(async () => {
+  loading.value = true
+  alert.value = false
   try {
-    loading.value = true
-    ListaCat.value = await getMostruarios()
-    console.log(ListaCat.value)
+    // ListaCat.value = await getMostruarios()
+    // loading.value = false
+
+    const res = await fetch('/Catalogo.json')
+    const data = await res.json()
+    ListaCat.value = new ListaCatalogos(data.catalogos)
     loading.value = false
-  } catch (error: any) {
+
+  } 
+  catch (error: any) {
     alert.value = true
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(error.messageError + ' - ' + error.error.message)
+    
   }
 })
 </script>

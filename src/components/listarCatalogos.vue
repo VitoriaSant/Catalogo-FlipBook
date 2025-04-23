@@ -1,5 +1,5 @@
 <template>
-  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
+  <alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
 
   <div id="tabela" v-if="ListaCat.catalogos.length > 0">
@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id"  @click="mostruariosSelecionado(catalogo.catalogo)">
+        <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id"  @click="mostruariosSelecionado()">
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
           
@@ -21,17 +21,6 @@
     </v-table>
   </div>
 
-  <!-- <div v-else="mostruariosSelecionado(ListaCat.catalogos[0].catalogo)">
-  {{ ListaCat.catalogos[0].catalogo }}
-  </div> -->
-  <!-- <div v-else>
-    <template v-if="ListaCat.catalogos?.length">
-      <v-btn @click="mostruariosSelecionado(ListaCat.catalogos[0].catalogo)">
-        {{ ListaCat.catalogos[0]?.catalogo }} - {{ ListaCat.catalogos[0]?.descricaoCatalago }}
-      </v-btn>
-    </template>
-    <p v-else>Nenhum catálogo encontrado.</p>
-  </div> -->
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Book
     :catalogo="lista.catalogo"
@@ -47,33 +36,65 @@
 import { Catalogo } from '@/classes/catalogo'
 import { getProdutos } from '../services/getItens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
-import Alerta from '@/components/alert.vue'
+import alerta from '@/components/alert.vue'
 
 const props = defineProps<{ catalogos: Catalogo[] }>()
 const lista = ref<ListaProduto>(new ListaProduto(0, '', 0, '', []))
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const abrirMostruarios = ref<boolean>(false)
-const ListaCat = computed(() => ({ catalogos: props.catalogos }))
+// const ListaCat = computed(() => ({ catalogos: props.catalogos }))
+const ListaCat = computed(() => props.catalogos)
 
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
-async function mostruariosSelecionado(idMostruarios: number) {
+onMounted(async () => {
+  alert.value = false
   try {
-    listaMostruarios.value = false
-    abrirMostruarios.value = true
-    loading.value = true
-    lista.value = await getProdutos(idMostruarios)
-    lista.value.produtos = ordenarProdutos(lista.value.produtos)
+    // lista.value = await getProdutos(idMostruarios)
+    // lista.value.produtos = ordenarProdutos(lista.value.produtos)
+    
+    //inicio dados mockados
+    const res = await fetch('/Produto.json')
+    if (!res.ok) {
+      throw new Error(`Erro ao carregar Produto.json: ${res.status}`)
+    }
+    const data = await res.json()
+  
+    lista.value = new ListaProduto(
+      data.catalogo,
+      data.descricaoCatalago,
+      data.empresa,
+      data.empresaDescricao,
+      data.itens
+    )
+    //fim dados mockados
+
     loading.value = false
+    console.log( lista.value)
   } catch (error: any) {
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(JSON.stringify(error.error.response.data.error) + ' - ' + error.error.message)
     alert.value = true
   }
+
+  if (ListaCat.value.length === 1) {
+  mostruariosSelecionado()
+  {{"1 so"}}
+} else {
+    listaMostruarios.value = true
+    abrirMostruarios.value = false
+  }
+})
+
+async function mostruariosSelecionado() {
+// async function mostruariosSelecionado(idMostruarios: number) {
+  loading.value = true
+  listaMostruarios.value = false
+  abrirMostruarios.value = true
 }
 
 // Função para ordenar os produtos por nome
@@ -98,19 +119,7 @@ function ordenarProdutos(produtos: any) {
   transform: translate(-50%, -50%);
   text-align: center;
 }
-/* table {
-  max-width: 95%;
-  margin: auto;
-  margin-top: 2%;
-  border-radius: 8px;
-  margin-bottom: 10%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 
-}
-table tr:nth-child(even),
-thead {
-  background-color: #eeeeeefc;
-} */
 table {
   max-width: 95%;
   margin: auto;
