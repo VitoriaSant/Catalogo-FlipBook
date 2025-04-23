@@ -29,7 +29,6 @@ onMounted(async () => {
     const data = await res.json()
     ListaCat.value = new ListaCatalogos(data.catalogos)
     loading.value = false
-
   } 
   catch (error: any) {
     alert.value = true

@@ -2,7 +2,7 @@
   <alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
 
-  <div id="tabela" v-if="ListaCat.catalogos.length > 0">
+  <div id="tabela">
     <v-table v-if="listaMostruarios">
       <thead>
         <tr>
@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(catalogo, id) in ListaCat.catalogos" :key="id"  @click="mostruariosSelecionado()">
+        <tr v-for="(catalogo, id) in ListaCat" :key="id"  @click="mostruariosSelecionado()">
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
           
@@ -62,7 +62,6 @@ onMounted(async () => {
       throw new Error(`Erro ao carregar Produto.json: ${res.status}`)
     }
     const data = await res.json()
-  
     lista.value = new ListaProduto(
       data.catalogo,
       data.descricaoCatalago,
@@ -71,9 +70,7 @@ onMounted(async () => {
       data.itens
     )
     //fim dados mockados
-
     loading.value = false
-    console.log( lista.value)
   } catch (error: any) {
     loading.value = false
     tituloErro = String(error.error.name)
@@ -83,7 +80,6 @@ onMounted(async () => {
 
   if (ListaCat.value.length === 1) {
   mostruariosSelecionado()
-  {{"1 so"}}
 } else {
     listaMostruarios.value = true
     abrirMostruarios.value = false
