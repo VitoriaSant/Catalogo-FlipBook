@@ -1,7 +1,7 @@
 <template >
   <div class="container" v-if="ocutarLivro === false">
     <!-- <span class="page-orientation">  </span> -->
-    <div class="flip-book" style="background-color: blueviolet;" id="demoBookExample">
+    <div class="flip-book" id="book">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div id="capaCatalogo">
           <h2>{{ props.descricaoCatalago }}</h2>
@@ -9,7 +9,7 @@
         </div>
       </div>
     </div>
-    <div class="flip-book" id="demoBookExample">
+    <div class="flip-book" id="book">
       <!-- Sumario -->
       <div class="page page-cover page-cover-top" data-density="hard">
         <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)">
@@ -35,13 +35,14 @@
           <h1 class="page-header">{{ "Nome do Produto" }}</h1>
           <!-- Imagem do Produto -->
           <div class="carousel-img">
-            <v-carousel 
-            :height="windowWidth > 768 ? '500px' : '300px'" 
-            show-arrows="hover"
-            hide-delimiter-background
-            width="100%">
+            <v-carousel
+              :height="windowWidth > 500 ? '540px' : '300px'" 
+              show-arrows="hover"
+              hide-delimiter-background
+              width="100%"
+            >
               
-                <v-carousel-item
+                <v-carousel-item 
                   v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
                   :key="imgId"
                 >
@@ -123,10 +124,10 @@
           <template v-if="produtoSelecionado">
             
             <v-carousel
-              height="100%"
-              width="100%"
+              :height="windowWidth > 768 ? '540px' : '300px'"
               show-arrows="hover"
               hide-delimiter-background
+              width="100%"
             >
               <v-carousel-item
                 v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens"
@@ -134,10 +135,9 @@
               >
               <div><v-btn icon="mdi-close" @click="imgTelacheia = false" id="btnTelaCheia"></v-btn></div>
                 <v-sheet
-                  height="100%"
-                  width="100%"
                   class="d-flex align-center justify-center"
                   id ="sheetTelaCheia"
+                  height="100%"
                 >  
                   <img
                     :src="detalhe.url"
@@ -189,11 +189,11 @@
       </v-card>
     </v-dialog>
     <!-- Botões de navegação -->
-    <v-row>
+    <v-row id="todosBotoesDeNavegacao" >
       <v-col class="d-flex justify-end">
         <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-center" id="botoesDeNavegacao">
+      <v-col class="d-flex justify-center" id="botoesDeNavegacaoCentral">
         <v-btn icon="mdi-home-outline" v-tooltip="'Mostruários'" @click="mostruario"></v-btn>
         <v-btn icon="mdi-format-list-numbered-rtl" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
         <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
@@ -226,6 +226,7 @@ const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
 const descDetalhe = ref<boolean>(false)
 const windowWidth = ref(window.innerWidth);
+
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth;
@@ -295,7 +296,7 @@ onMounted(() => {
 })
 
 function construirLivro() {
-  const livroElemento = document.getElementById('demoBookExample')
+  const livroElemento = document.getElementById('book')
   if (!livroElemento) return
 
   // largura = window.innerWidth > 1024 ? 550 : window.innerWidth * 0.9; // Fixa em 550px para telas maiores
@@ -318,7 +319,8 @@ function construirLivro() {
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
     mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: true
+    disableFlipByClick: true,
+
   })
 
   const pages = document.querySelectorAll('.page') as NodeListOf<HTMLElement>
@@ -331,7 +333,7 @@ function construirLivro() {
     pageFlip.value.on('changeState', (state) => {
       if (state.data === 'fold_corner') {
         console.log('Evento de dobrar canto da página')
-        
+        //state.preventDefault?.();
         return;
       }
     })
@@ -365,8 +367,17 @@ body {
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
 }
 
-#botoesDeNavegacao {
+#botoesDeNavegacaoCentral {
   gap: 6px; /* Espaçamento entre os botões */
+}
+#todosBotoesDeNavegacao{
+  position: fixed; /* Fixa os botões na parte inferior da tela */
+  bottom: 0; /* Distância do final da página */
+  left: 0;
+  right: 0;
+  margin-bottom: 1px;
+  background-color: #fff; /* Cor de fundo dos botões */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Sombra para destacar os botões */
 }
 
 #botoesPagina {
@@ -415,35 +426,29 @@ body {
   text-align: left;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 500px) {
   .carousel-img {
   width: 100%;
   max-width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
   margin: auto;
   flex: 1;
   height: auto; 
+  align-items: flex-start;
 }
 
-.carousel-img > v-carousel {
-  width: 90%;
-  max-width: 100%;
+@media (min-width: 501px) {
+  .carousel-img {
+    width: 80%; /* Ajusta a largura para 80% */
+    max-width: 1200px; /* Define um limite máximo de largura */
+    margin: 0 auto; /* Centraliza horizontalmente */
+    display: flex;
+    align-items: flex-start; /* Alinha o conteúdo ao topo */
+    justify-content: center; /* Centraliza horizontalmente o conteúdo */
+
+  }
 }
 
-v-carousel-item {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-}
-
-v-carousel-item > v-sheet {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
 
 v-sheet > div {
   width: 100%;
@@ -466,8 +471,6 @@ img {
 }
 
 .container {
-  display: flex;
-  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -512,17 +515,18 @@ h3 {
 
 
 /* Padrão BOOK INICIO*/
-#demoBookExample {
+#book {
   margin: 15px auto;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 20px 0 rgba(208, 208, 208, 0.5) !important;
   display: block;
   background-size: cover !important;
-  max-width: 100px; /* Limita a largura ao tamanho da janela */
-  max-height: 100px; /* Limita a altura ao tamanho da janela */
-  
+ 
+  height: 0vh; 
+  max-height: none;
+  overflow: hidden; 
 }
 .page {
-  padding: 20px;
+  padding: 5px;
   background-color: hsl(0, 0%, 100%);
   color: hsl(0, 0%, 0%);
   border: solid 1px hsl(244, 25%, 79%);
@@ -545,7 +549,6 @@ h3 {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: stretch;
 }
 
@@ -571,6 +574,7 @@ h3 {
   border-top: solid 1px hsl(248, 57%, 90%);
   font-size: 80%;
   color: hsl(251, 20%, 50%);
+  margin-top: auto;
 }
 
 .page.--left {
