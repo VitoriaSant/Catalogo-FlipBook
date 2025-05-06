@@ -1,4 +1,5 @@
 <template>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
   <ListarCatalogos :catalogos="ListaCat.catalogos" v-if="ListaCat.catalogos.length > 0" />
@@ -22,12 +23,12 @@ onMounted(async () => {
   loading.value = true
   alert.value = false
   try {
-    // ListaCat.value = await getMostruarios()
-    // loading.value = false
-
-    const res = await fetch('/Catalogo.json')
-    const data = await res.json()
-    ListaCat.value = new ListaCatalogos(data.catalogos)
+    ListaCat.value = await getMostruarios()
+    loading.value = false
+  
+    //const res = await fetch('/Catalogo.json')
+    //const data = await res.json()
+    ListaCat.value = new ListaCatalogos(ListaCat.value.catalogos)
     loading.value = false
   } 
   catch (error: any) {

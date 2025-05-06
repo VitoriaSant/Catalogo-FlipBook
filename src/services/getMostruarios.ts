@@ -16,10 +16,8 @@ export async function getMostruarios(): Promise<ListaCatalogos> {
     for (const registro of data.catalogos) {
       listaCat.catalogos.push(new Catalogo(registro))
     }
-    console.log('Lista de catálogos:', listaCat.catalogos)
     return listaCat
   } catch (error) {
-    console.error('Erro ao listar catálogos:', error)
     throw {
       idError: 'ERR_AUTH',
       messageError: 'Falha na listagem dos catálogos',

@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(catalogo, id) in ListaCat" :key="id"  @click="mostruariosSelecionado()">
+        <tr v-for="(catalogo, id) in ListaCat" :key="id"  @click="mostruariosSelecionado(catalogo.catalogo)">
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
           
@@ -43,54 +43,54 @@ const lista = ref<ListaProduto>(new ListaProduto(0, '', 0, '', []))
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const abrirMostruarios = ref<boolean>(false)
-// const ListaCat = computed(() => ({ catalogos: props.catalogos }))
 const ListaCat = computed(() => props.catalogos)
+
 
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
 onMounted(async () => {
-  alert.value = false
-  try {
-    // lista.value = await getProdutos(idMostruarios)
-    // lista.value.produtos = ordenarProdutos(lista.value.produtos)
-    
-    //inicio dados mockados
-    const res = await fetch('/Produto.json')
-    if (!res.ok) {
-      throw new Error(`Erro ao carregar Produto.json: ${res.status}`)
-    }
-    const data = await res.json()
-    lista.value = new ListaProduto(
-      data.catalogo,
-      data.descricaoCatalago,
-      data.empresa,
-      data.empresaDescricao,
-      data.itens
-    )
-    //fim dados mockados
-    loading.value = false
+  if (ListaCat.value.length === 1) {
+  mostruariosSelecionado(ListaCat.value[0].catalogo)
+} else {
+    listaMostruarios.value = true
+  }
+  //inicio dados mockados
+  // const res = await fetch('/Produto.json')
+  //   if (!res.ok) {
+  //     throw new Error(`Erro ao carregar Produto.json: ${res.status}`)
+  //   }
+  //   const data = await res.json()
+  //   lista.value = new ListaProduto(
+  //     data.catalogo,
+  //     data.descricaoCatalago,
+  //     data.empresa,
+  //     data.empresaDescricao,
+  //     data.itens
+  //   )
+  //fim dados mockados
+})
+
+async function mostruariosSelecionado(idMostruarios: number) {
+  try{
+    loading.value = true
+    alert.value = false
+    listaMostruarios.value = false
+    lista.value = await getProdutos(idMostruarios)
+    lista.value.produtos = ordenarProdutos(lista.value.produtos)
+    abrirMostruarios.value = true
+    	
   } catch (error: any) {
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(JSON.stringify(error.error.response.data.error) + ' - ' + error.error.message)
     alert.value = true
   }
-
-  if (ListaCat.value.length === 1) {
-  mostruariosSelecionado()
-} else {
-    listaMostruarios.value = true
-    abrirMostruarios.value = false
+  finally {
+    loading.value = false
   }
-})
 
-async function mostruariosSelecionado() {
-// async function mostruariosSelecionado(idMostruarios: number) {
-  loading.value = true
-  listaMostruarios.value = false
-  abrirMostruarios.value = true
 }
 
 // Função para ordenar os produtos por nome

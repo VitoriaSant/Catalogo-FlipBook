@@ -1,7 +1,7 @@
 <template >
   <div class="container" v-if="ocutarLivro === false">
     <!-- <span class="page-orientation">  </span> -->
-    <div class="flip-book" style="background-color: blueviolet; padding-top: -100px;" id="demoBookExample">
+    <div class="flip-book" style="background-color: blueviolet;" id="demoBookExample">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div id="capaCatalogo">
           <h2>{{ props.descricaoCatalago }}</h2>
@@ -14,7 +14,6 @@
       <div class="page page-cover page-cover-top" data-density="hard">
         <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)">
           <p id="text-sumario">Sumário</p>
-
           <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
             <v-btn
               id="opc-sumario"
@@ -36,44 +35,46 @@
           <h1 class="page-header">{{ "Nome do Produto" }}</h1>
           <!-- Imagem do Produto -->
           <div class="carousel-img">
-            <v-carousel height="500" show-arrows="hover" hide-delimiter-background width="100%">
-              <div>
+            <v-carousel 
+            :height="windowWidth > 768 ? '500px' : '300px'" 
+            show-arrows="hover"
+            hide-delimiter-background
+            width="100%">
+              
                 <v-carousel-item
                   v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
                   :key="imgId"
                 >
                   <v-sheet height="100%">
                     <div>
-                      <v-img class="bg-grey-lighten-2" height="500" :src="detalhe.url" />
+                      <v-img class="bg-grey-lighten-2" :src="detalhe.url" />
                     </div>
                   </v-sheet>
                 </v-carousel-item>
-              </div>
+              
             </v-carousel>
           </div>
-          <v-row>
+          <v-row id="botoesPagina">
             <!-- Seleçao de detalhamento -->
-            <v-col class="d-flex" lg="8">
-              <div class="select-detalhe">
+            <v-col cols="8" class="d-flex">              
                 <v-select
-                  density="compact"
+                  class="w-100"
+                  size="small"
                   label="Detalhamento"
-                  min-width="360"
                   :items="produto.detalhamento"
                   :item-title="(item) => concatenarDetalhe(item)"
                   :return-object="true"
                   v-model="produto.detalhamentoSelecionado"
                 >
                 </v-select>
-              </div>
             </v-col>
             <!-- Botão de descricao do produto -->
             
-            <v-col class="d-flex justify-end btnInfo" lg="2" >
+            <v-col cols="2" class="d-flex justify-center btnInfo" >
               <div>
                 <!-- Descricao do produto -->
-                <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento"></v-btn>                    
-                    <v-dialog id="PesquisaItem" v-model="descDetalhe">
+                <v-btn  icon="mdi-exclamation-thick" @click="exibirDetalhamento"></v-btn>                    
+                    <v-dialog v-model="descDetalhe">
                       <v-card>
                         {{ "Nome do Produto" }}
                         <br />
@@ -109,7 +110,7 @@
               </div>
             </v-col>
             <!-- Expandir imagem -->
-            <v-col class="d-flex justify-start btnInfo" lg="2">
+            <v-col cols="2" class="d-flex justify-center btnInfo">
               <div>
                 <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn> 
               </div>
@@ -122,8 +123,8 @@
           <template v-if="produtoSelecionado">
             
             <v-carousel
-              height="100vh"
-              width="100vw"
+              height="100%"
+              width="100%"
               show-arrows="hover"
               hide-delimiter-background
             >
@@ -139,7 +140,6 @@
                   id ="sheetTelaCheia"
                 >  
                   <img
-                    id="ImgExpandida"
                     :src="detalhe.url"
                     alt="Imagem do produto"
                   />
@@ -225,11 +225,15 @@ const listarMostruarios = ref<boolean>(false)
 const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
 const descDetalhe = ref<boolean>(false)
+const windowWidth = ref(window.innerWidth);
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
 
 const exibirDetalhamento = () => {
   descDetalhe.value = !descDetalhe.value
 }
-
 
 const mostruario = () => {
   listarMostruarios.value = true
@@ -286,17 +290,26 @@ function concatenarDetalhe(item: any) {
 
 onMounted(() => {
   construirLivro()
+  window.addEventListener('resize', construirLivro);
+  window.addEventListener('resize', updateWindowWidth);
 })
 
 function construirLivro() {
   const livroElemento = document.getElementById('demoBookExample')
   if (!livroElemento) return
 
-  pageFlip.value = new PageFlip(livroElemento, {
-    width: 550, // Largura da página base
-    height: 700, // Altura da página base
+  // largura = window.innerWidth > 1024 ? 550 : window.innerWidth * 0.9; // Fixa em 550px para telas maiores
+  //const altura = window.innerWidth > 1024 ? 700 : window.innerHeight * 0.9; // Fixa em 700px para telas maiores
 
+  pageFlip.value = new PageFlip(livroElemento, {
+    //width: 550, // Largura da página base
+    //height: 700, // Altura da página base
+    width: window.innerWidth > 550 ? 550 : window.innerWidth * 0.9,
+    height: window.innerHeight > 700 ? 700 : window.innerHeight * 0.8,
+    
     // Define valores limite:
+    //width: largura, // Ajusta a largura dinamicamente
+    //height: altura, // Ajusta a altura dinamicamente
     minWidth: 315,
     maxWidth: 1000,
     minHeight: 420,
@@ -324,9 +337,13 @@ function construirLivro() {
     })
   }
 }
+
 </script>
 
 <style>
+body {
+  overflow-x: hidden;
+}
 
 #btnTelaCheia{
   position: absolute;
@@ -335,19 +352,32 @@ function construirLivro() {
   z-index: 10;
 }
 
-#ImgExpandida {
+/* #ImgExpandida {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
-}
+} */
+
+/* Fundo preto da img tela cheia */
 #sheetTelaCheia {
   background-color: #00000067;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
 }
 
 #botoesDeNavegacao {
-  gap: 10px;
+  gap: 6px; /* Espaçamento entre os botões */
+}
+
+#botoesPagina {
+  display: flex;
+  justify-content: space-between; /* Distribui os botões horizontalmente */
+  position: absolute; /* Posiciona os botões em relação ao contêiner pai */
+  bottom: 20px; /* Define a distância do final da página */
+  left: 0;
+  right: 0;
+  padding: 20px; /* Adiciona espaçamento lateral */
+  
 }
 
 #ultimaPagina {
@@ -367,26 +397,10 @@ function construirLivro() {
 #tituloCatalogo {
   font-size: 25px;
 }
-#idTooltip {
-  border-radius: 8px; /* Borda arredondada */
-  text-align: center;
-}
-
-#PesquisaItem {
-  text-align: center;
-}
-
-#demoBookExample {
-  margin: 15px auto;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
-  display: none;
-  background-size: cover !important;
-}
 
 #text-sumario {
   font-size: 25px;
   text-align: center;
-
   color: #545454;
 }
 
@@ -394,11 +408,79 @@ function construirLivro() {
   font-size: 11px;
   margin-top: -3%;
 }
+
 #text-opc-sumario {
   white-space: normal;
   word-wrap: break-word;
   text-align: left;
 }
+
+@media (max-width: 768px) {
+  .carousel-img {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  flex: 1;
+  height: auto; 
+}
+
+.carousel-img > v-carousel {
+  width: 90%;
+  max-width: 100%;
+}
+
+v-carousel-item {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+v-carousel-item > v-sheet {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+v-sheet > div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+v-img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page {
+  flex: 1 1 calc(100% - 16px); /* Ajusta para ocupar 100% em telas menores */
+}
+
+@media (min-width: 769px) {
+  .page {
+    flex: 1 1 calc(50% - 16px); /* Ajusta para 50% em telas maiores */
+  }
+}
+
 .capaCatalogo {
   background-size: cover;
   background-position: center;
@@ -406,48 +488,47 @@ function construirLivro() {
   width: 100%;
 }
 
-.img-contain img {
-  object-fit: contain !important;
-}
-
 .btnInfo {
   margin-top: 1%;
-}
-
-.text-medidas {
-  height: 1px;
-  background-color: #333;
-  width: 90%;
-  margin-top: 2%;
-  font-size: 120%;
-  position: fixed;
-}
-
-.text-interno-medidas {
-  margin-top: 2%;
-}
-
-.carousel-img {
-  margin-top: 5%;
 }
 
 .select-detalhe {
   margin-top: 3%;
 }
 
+.page img {
+  width: 500%;
+}
+
+.page.page-cover h2 {
+  text-align: center;
+  padding-top: 50%;
+  font-size: 210%;
+}
+
+h3 {
+  text-align: center;
+}
+
+
+/* Padrão BOOK INICIO*/
+#demoBookExample {
+  margin: 15px auto;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
+  display: block;
+  background-size: cover !important;
+  max-width: 100px; /* Limita a largura ao tamanho da janela */
+  max-height: 100px; /* Limita a altura ao tamanho da janela */
+  
+}
 .page {
   padding: 20px;
   background-color: hsl(0, 0%, 100%);
   color: hsl(0, 0%, 0%);
   border: solid 1px hsl(244, 25%, 79%);
   overflow: hidden;
-  
-
-  } 
-
-.page img {
-  width: 500px;
 }
+
 .page .page-content .page-text {
   height: 100%;
   flex-grow: 1;
@@ -478,7 +559,8 @@ function construirLivro() {
 }
 
 .page .page-content .page-image img {
-  height: 100%;
+  max-width: 100%;
+  height: auto;;
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
@@ -516,15 +598,6 @@ function construirLivro() {
   border: solid 1px hsl(248, 12%, 73%);
 }
 
-.page.page-cover h2 {
-  text-align: center;
-  padding-top: 50%;
-  font-size: 210%;
-}
-h3 {
-  text-align: center;
-}
-
 .page.page-cover.page-cover-top {
   box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(36, 10, 3, 0.5);
 }
@@ -532,4 +605,5 @@ h3 {
 .page.page-cover.page-cover-bottom {
   box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), 10px 0 8px 0px rgba(0, 0, 0, 0.4);
 }
+/* Padrão BOOK FIM*/
 </style>
