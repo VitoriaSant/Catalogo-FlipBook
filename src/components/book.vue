@@ -270,15 +270,16 @@ const selectPag = (Pag: any) => {
 
 const proxPag = () => {
   if (pageFlip.value) {
-    pageFlip.value.turnToNextPage()
+    pageFlip.value.flipNext()
   }
 }
 
 const antPag = () => {
   if (pageFlip.value) {
-    pageFlip.value.turnToPrevPage()
+    pageFlip.value.flipPrev()
   }
 }
+
 
 function concatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor
@@ -323,7 +324,7 @@ function construirLivro() {
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
     mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: true,
+    disableFlipByClick: false,
 
   })
 
