@@ -60,7 +60,6 @@
             <v-col cols="8" class="d-flex">              
                 <v-select
                   class="w-100"
-                  size="small"
                   label="Detalhamento"
                   :items="produto.detalhamento"
                   :item-title="(item) => concatenarDetalhe(item)"
@@ -125,7 +124,7 @@
           <template v-if="produtoSelecionado">
             
             <v-carousel
-              :height="windowWidth > 768 ? '540px' : '300px'"
+              :height="windowWidth > 500 ? '800px' : '500px'"
               show-arrows="hover"
               hide-delimiter-background
               width="100%"
@@ -138,9 +137,11 @@
                 <v-sheet
                   class="d-flex align-center justify-center"
                   id ="sheetTelaCheia"
-                  height="100%"
+                  :height="windowWidth > 500 ? '800px' : '300px'"
                 >  
                   <img
+                    class="bg-grey-lighten-2"
+                    :class="windowWidth > 500 ? 'carousel-img' : '500px'"
                     :src="detalhe.url"
                     alt="Imagem do produto"
                   />
@@ -199,8 +200,8 @@
         <v-btn icon="mdi-format-list-numbered-rtl" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
         <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-start" v-tooltip="'Próxima página'" @click="proxPag">
-        <v-btn icon="mdi-arrow-right-bold"></v-btn>
+      <v-col class="d-flex justify-start" v-tooltip="'Próxima página'">
+        <v-btn icon="mdi-arrow-right-bold" @click="proxPag"></v-btn>
       </v-col>
     </v-row>
   </div>
@@ -276,7 +277,7 @@ const proxPag = () => {
 
 const antPag = () => {
   if (pageFlip.value) {
-    pageFlip.value.flipPrev()
+    pageFlip.value.turnToPrevPage()
   }
 }
 
@@ -323,8 +324,8 @@ function construirLivro() {
 
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
-    mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: false,
+    mobileScrollSupport: false, // Desabilitar rolagem de conteúdo em dispositivos móveis
+    disableFlipByClick: true,
 
   })
 
@@ -365,17 +366,19 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Sombra para destacar o card */
 }
 
-/* #ImgExpandida {
+ /* #ImgExpandida {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
-} */
+}  */
 
 /* Fundo preto da img tela cheia */
 #sheetTelaCheia {
   background-color: #00000067;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important; /* Sombra */
+  display: flex;
+  justify-content: center;
 }
 
 #botoesDeNavegacaoCentral {
@@ -435,6 +438,9 @@ body {
   word-wrap: break-word;
   text-align: left;
 }
+#imgCheia {
+  width: 90%;
+}
 
 @media (max-width: 500px) {
   .carousel-img {
@@ -450,6 +456,11 @@ body {
   font-size: 12px;
   text-align: center;
 }
+#sheetTelaCheia{
+  margin-top: 100%;
+  margin: 2%;
+}
+
 }
 
 @media (min-width: 501px) {
@@ -461,7 +472,9 @@ body {
     align-items: flex-start; /* Alinha o conteúdo ao topo */
     justify-content: center; /* Centraliza horizontalmente o conteúdo */
 
-  }}
+  }
+  
+}
 
 
 v-sheet > div {
