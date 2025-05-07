@@ -40,6 +40,7 @@ export class Produto {
     // Propriedade para os componentes
     detalhamentoSelecionado?: Detalhamento
     paginaDoProduto?: number
+    mostrarDetalhamento?: boolean
 
     constructor(pObjeto: Produto) {
         this.item = pObjeto.item
@@ -60,6 +61,7 @@ export class Produto {
         this.detalhamento = pObjeto.detalhamento ?? []
 
         this.paginaDoProduto = 0
+        this.mostrarDetalhamento = false
 
         if (this.detalhamento && this.detalhamento.length > 0) {
             this.detalhamentoSelecionado = pObjeto.detalhamento[0] // Assumindo que a primeira imagem seja a padrão

@@ -74,9 +74,10 @@
             <v-col cols="2" class="d-flex justify-center btnInfo" >
               <div>
                 <!-- Descricao do produto -->
-                <v-btn  icon="mdi-exclamation-thick" @click="exibirDetalhamento"></v-btn>                    
-                    <v-dialog v-model="descDetalhe">
-                      <v-card>
+                <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>                    
+                    <v-dialog v-model="produto.mostrarDetalhamento">
+                      <v-card id="cardDescricaoProduto">
+                        <v-btn id="btnTelaCheia" icon="mdi-close" @click="produto.mostrarDetalhamento = false"></v-btn>
                         {{ "Nome do Produto" }}
                         <br />
                         {{ produto.descricao }}
@@ -224,7 +225,7 @@ const imgTelacheia = ref(false)
 const listarMostruarios = ref<boolean>(false)
 const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
-const descDetalhe = ref<boolean>(false)
+//const descDetalhe = ref<boolean>(false)
 const windowWidth = ref(window.innerWidth);
 
 
@@ -232,8 +233,11 @@ const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth;
 };
 
-const exibirDetalhamento = () => {
-  descDetalhe.value = !descDetalhe.value
+const exibirDetalhamento = (produto: any) => { 
+  filtroProdutos.value.forEach((p) => {
+    p.mostrarDetalhamento = false; // Fecha todos os outros diálogos
+  });
+  produto.mostrarDetalhamento = true; // Abre o diálogo apenas para o produto clicado
 }
 
 const mostruario = () => {
@@ -348,10 +352,16 @@ body {
 }
 
 #btnTelaCheia{
-  position: absolute;
-  top: 16px; 
-  right: 16px; 
+  position: fixed; 
+  top: 10px; 
+  right: 10px; 
   z-index: 10;
+}
+#cardDescricaoProduto{
+  max-width: 100%;
+  max-height: 100%;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Sombra para destacar o card */
 }
 
 /* #ImgExpandida {
@@ -376,7 +386,6 @@ body {
   left: 0;
   right: 0;
   margin-bottom: 1px;
-  background-color: #fff; /* Cor de fundo dos botões */
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Sombra para destacar os botões */
 }
 
@@ -428,7 +437,7 @@ body {
 
 @media (max-width: 500px) {
   .carousel-img {
-  width: 100%;
+  width: 95%;
   max-width: 100%;
   display: flex;
   margin: auto;
@@ -436,18 +445,22 @@ body {
   height: auto; 
   align-items: flex-start;
 }
+#ultimaPagina{
+  font-size: 12px;
+  text-align: center;
+}
+}
 
 @media (min-width: 501px) {
   .carousel-img {
-    width: 80%; /* Ajusta a largura para 80% */
+    width: 95%; /* Ajusta a largura para 80% */
     max-width: 1200px; /* Define um limite máximo de largura */
     margin: 0 auto; /* Centraliza horizontalmente */
     display: flex;
     align-items: flex-start; /* Alinha o conteúdo ao topo */
     justify-content: center; /* Centraliza horizontalmente o conteúdo */
 
-  }
-}
+  }}
 
 
 v-sheet > div {
@@ -461,7 +474,7 @@ v-img {
   max-width: 100%;
   height: auto;
   object-fit: contain;
-}}
+}
 
 img {
   max-width: 100%;
