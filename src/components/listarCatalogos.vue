@@ -8,14 +8,16 @@
         <tr>
           <th class="text-center">Códigos</th>
           <th class="text-center">Mostruários</th>
-          
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(catalogo, id) in ListaCat" :key="id"  @click="mostruariosSelecionado(catalogo.catalogo)">
+        <tr
+          v-for="(catalogo, id) in ListaCat"
+          :key="id"
+          @click="mostruariosSelecionado(catalogo.catalogo)"
+        >
           <td class="text-center">{{ catalogo.catalogo }}</td>
           <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
-          
         </tr>
       </tbody>
     </v-table>
@@ -45,15 +47,14 @@ const listaMostruarios = ref<boolean>(true)
 const abrirMostruarios = ref<boolean>(false)
 const ListaCat = computed(() => props.catalogos)
 
-
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
 onMounted(async () => {
   if (ListaCat.value.length === 1) {
-  mostruariosSelecionado(ListaCat.value[0].catalogo)
-} else {
+    mostruariosSelecionado(ListaCat.value[0].catalogo)
+  } else {
     listaMostruarios.value = true
   }
   //inicio dados mockados
@@ -73,24 +74,21 @@ onMounted(async () => {
 })
 
 async function mostruariosSelecionado(idMostruarios: number) {
-  try{
+  try {
     loading.value = true
     alert.value = false
     listaMostruarios.value = false
     lista.value = await getProdutos(idMostruarios)
     lista.value.produtos = ordenarProdutos(lista.value.produtos)
     abrirMostruarios.value = true
-    	
   } catch (error: any) {
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(JSON.stringify(error.error.response.data.error) + ' - ' + error.error.message)
     alert.value = true
-  }
-  finally {
+  } finally {
     loading.value = false
   }
-
 }
 
 // Função para ordenar os produtos por nome
@@ -128,14 +126,13 @@ table {
 
 table tr:nth-child(even),
 thead {
-  background-color: #eeeeeefc; /*linhas com cores intercaladas */
-  border-radius: 8px; /* bordas arredondadas */  
+  background-color: #eeeeeefc;
+  border-radius: 8px;
 }
 
 table tbody tr:hover {
-  background-color: #adacac; /* azul bem claro */
-  transform: scale(1.01); /* leve efeito de zoom */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* sombra leve na linha */
+  background-color: #adacac;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
-
 </style>
