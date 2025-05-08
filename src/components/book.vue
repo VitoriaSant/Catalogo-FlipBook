@@ -1,202 +1,207 @@
-<template >
+<template>
   <div class="container" v-if="ocutarLivro === false">
     <div class="flip-book" id="book">
-        <div class="page page-cover page-cover-top" data-density="hard">
-          <div id="capaCatalogo">
-            <h2>{{ props.descricaoCatalago }}</h2>
-            <h3>{{ props.empresaDescricao }}</h3>
-          </div>
+      <div class="page page-cover page-cover-top" data-density="hard">
+        <div id="capaCatalogo">
+          <h2>{{ props.descricaoCatalago }}</h2>
+          <h3>{{ props.empresaDescricao }}</h3>
         </div>
-        <!-- Sumario -->
-          <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
-            <p id="text-sumario">Sumário</p>
-            <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
-              <v-btn
-                id="opc-sumario"
-                variant="plain"
-                @click="
-                  selectPag(Math.ceil(filtroProdutos.length / 25) + 1 + produto.paginaDoProduto)
-                "
-              >
-                <div id="text-opc-sumario">
-                  {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ "Nome do Produto" }}
-                </div>
-              </v-btn>
-            </p>
-          </div>
-        <!-- Pagina de produtos -->
-        <div class="page" v-for="(produto, index) in filtroProdutos" :key="index">
-          <div class="page-content">
-            <h1 class="page-header">{{ "Nome do Produto" }}</h1>
-            <!-- Imagem do Produto -->
-            <div class="carousel-img">
-              <v-carousel
-                :height="windowWidth > 500 ? '540px' : '300px'" 
-                show-arrows="hover"
-                hide-delimiter-background
-                width="100%"
-              > 
-                  <v-carousel-item 
-                    v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
-                    :key="imgId"
-                  >
-                    <v-sheet height="100%"
-                      class="d-flex align-center justify-center">
-                        <v-img class="bg-grey-lighten-2"
-                          :src="detalhe.url" />
-                    </v-sheet>
-                  </v-carousel-item>
-              </v-carousel>
+      </div>
+      <!-- Sumario -->
+      <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
+        <p id="text-sumario">Sumário</p>
+        <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
+          <v-btn
+            id="opc-sumario"
+            variant="plain"
+            @click="
+              selectPag(Math.ceil(filtroProdutos.length / 25) + 1 + (produto.paginaDoProduto ?? 0))
+            "
+          >
+            <div id="text-opc-sumario">
+              {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ 'Nome do Produto' }}
             </div>
-            <v-row id="botoesPagina">
-              <!-- Seleçao de detalhamento -->
-              <v-col cols="8" class="d-flex">              
-                  <v-select
-                    class="w-100"
-                    label="Detalhamento"
-                    :items="produto.detalhamento"
-                    :item-title="(item) => concatenarDetalhe(item)"
-                    :return-object="true"
-                    v-model="produto.detalhamentoSelecionado"
-                  >
-                  </v-select>
-              </v-col>
-              <!-- Botão de descricao do produto -->
-              <v-col cols="2" class="d-flex justify-center btnInfo" >
-                <div>
-                  <!-- Descricao do produto -->
-                  <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>                    
-                      <v-dialog v-model="produto.mostrarDetalhamento">
-                        <v-card id="cardDescricaoProduto">
-                          <v-btn id="btnTelaDesc" icon="mdi-close" @click="produto.mostrarDetalhamento = false"></v-btn>
-                          {{ "Nome do Produto" }}
-                          <br />
-                          {{ produto.descricao }}
-                          <template v-if="produto.colecao !== 'INDEFINIDA'">
-                            <br />
-                            Coleção: {{ produto.colecao }}
-                          </template>
-                          <template v-if="produto.linha !== 'INDEFINIDA'">
-                            <br />
-                            Linha: {{ produto.linha }}
-                          </template>
-                          <template v-if="produto.grupo !== 'INDEFINIDO'">
-                            <br />
-                            Grupo: {{ produto.grupo }}
-                          </template>
-                          <template
-                            v-if="
-                              produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
-                            "
-                          >
-                            <br />
-                            Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
-                            {{ produto.comprimento }}
-                          </template>
-                          <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
-                            <br />
-                            Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
-                          </template>
-                        </v-card>
-                      </v-dialog>
-                  
-                </div>
-              </v-col>
-              <!-- Expandir imagem -->
-              <v-col cols="2" class="d-flex justify-center btnInfo">
-                <div>
-                  <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn> 
-                </div>
-              </v-col>
-            </v-row>
-            <div class="page-footer">{{ index + 1 }}</div>
-          </div> 
-          <!-- Imagem em tela cheia             -->
-          <v-dialog v-model="imgTelacheia" fullscreen>
-            <template v-if="produtoSelecionado">
-              
-              <v-carousel
-                :height="windowWidth > 500 ? '800px' : '500px'"
-                show-arrows="hover"
-                hide-delimiter-background
-                width="100%"
+          </v-btn>
+        </p>
+      </div>
+      <!-- Pagina de produtos -->
+      <div class="page" v-for="(produto, index) in filtroProdutos" :key="index">
+        <div class="page-content">
+          <h1 class="page-header">{{ 'Nome do Produto' }}</h1>
+          <!-- Imagem do Produto -->
+          <div class="carousel-img">
+            <v-carousel
+              :height="windowWidth > 500 ? '540px' : '300px'"
+              show-arrows="hover"
+              hide-delimiter-background
+              width="100%"
+            >
+              <v-carousel-item
+                v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
+                :key="imgId"
               >
-                <v-carousel-item
-                  v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens"
-                  :key="imgId"
+                <v-sheet height="100%" class="d-flex align-center justify-center">
+                  <v-img class="bg-grey-lighten-2" :src="detalhe.url" />
+                </v-sheet>
+              </v-carousel-item>
+            </v-carousel>
+          </div>
+          <v-row id="botoesPagina">
+            <!-- Seleçao de detalhamento -->
+            <v-col cols="8" class="d-flex">
+              <v-select
+                class="w-100"
+                label="Detalhamento"
+                :items="produto.detalhamento"
+                :item-title="(item) => concatenarDetalhe(item)"
+                :return-object="true"
+                v-model="produto.detalhamentoSelecionado"
+              >
+              </v-select>
+            </v-col>
+            <!-- Botão de descricao do produto -->
+            <v-col cols="2" class="d-flex justify-center btnInfo">
+              <div>
+                <!-- Descricao do produto -->
+                <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
+                <v-dialog v-model="produto.mostrarDetalhamento">
+                  <v-card id="cardDescricaoProduto">
+                    <v-btn
+                      id="btnTelaDesc"
+                      icon="mdi-close"
+                      @click="produto.mostrarDetalhamento = false"
+                    ></v-btn>
+                    {{ 'Nome do Produto' }}
+                    <br />
+                    {{ produto.descricao }}
+                    <template v-if="produto.colecao !== 'INDEFINIDA'">
+                      <br />
+                      Coleção: {{ produto.colecao }}
+                    </template>
+                    <template v-if="produto.linha !== 'INDEFINIDA'">
+                      <br />
+                      Linha: {{ produto.linha }}
+                    </template>
+                    <template v-if="produto.grupo !== 'INDEFINIDO'">
+                      <br />
+                      Grupo: {{ produto.grupo }}
+                    </template>
+                    <template
+                      v-if="
+                        produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
+                      "
+                    >
+                      <br />
+                      Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
+                      {{ produto.comprimento }}
+                    </template>
+                    <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
+                      <br />
+                      Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
+                    </template>
+                  </v-card>
+                </v-dialog>
+              </div>
+            </v-col>
+            <!-- Expandir imagem -->
+            <v-col cols="2" class="d-flex justify-center btnInfo">
+              <div>
+                <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn>
+              </div>
+            </v-col>
+          </v-row>
+          <div class="page-footer">{{ index + 1 }}</div>
+        </div>
+        <!-- Imagem em tela cheia             -->
+        <v-dialog v-model="imgTelacheia" fullscreen>
+          <template v-if="produtoSelecionado">
+            <v-carousel
+              :height="windowWidth > 500 ? '800px' : '500px'"
+              show-arrows="hover"
+              hide-delimiter-background
+              width="100%"
+            >
+              <v-carousel-item
+                v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens"
+                :key="imgId"
+              >
+                <div>
+                  <v-btn icon="mdi-close" @click="imgTelacheia = false" id="btnTelaCheia"></v-btn>
+                </div>
+                <v-sheet
+                  class="d-flex align-center justify-center"
+                  id="sheetTelaCheia"
+                  :height="windowWidth > 500 ? '800px' : '500px'"
                 >
-                <div><v-btn icon="mdi-close" @click="imgTelacheia = false" id="btnTelaCheia"></v-btn></div>
-                  <v-sheet
-                    class="d-flex align-center justify-center"
-                    id ="sheetTelaCheia"
-                    :height="windowWidth > 500 ? '800px' : '500px'"
-                  >  
-                    <img
-                      class="bg-grey-lighten-2"
-                      :class="windowWidth > 500 ? '900' : '500px'"
-                      :src="detalhe.url"
-                      alt="Imagem do produto"
-                    />
-                  </v-sheet>
-                </v-carousel-item>
-              </v-carousel>
-            </template>
-          </v-dialog>
-        </div>
-        <!-- Ultima pagina -->
-        <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
-          <div id="ultimaPagina">
-            <div id="tituloCatalogo">{{ props.descricaoCatalago }}</div>
-            Obrigado por explorar nosso Catálogo de Verão!
+                  <img
+                    class="bg-grey-lighten-2"
+                    :class="windowWidth > 500 ? '900' : '500px'"
+                    :src="detalhe.url"
+                    alt="Imagem do produto"
+                  />
+                </v-sheet>
+              </v-carousel-item>
+            </v-carousel>
+          </template>
+        </v-dialog>
+      </div>
+      <!-- Ultima pagina -->
+      <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
+        <div id="ultimaPagina">
+          <div id="tituloCatalogo">{{ props.descricaoCatalago }}</div>
+          Obrigado por explorar nosso Catálogo de Verão!
+          <br />
+          Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
+          estação. Combinando sofisticação, conforto e praticidade, nossos móveis foram pensados
+          para oferecer a melhor experiência durante os dias mais quentes do ano. Se precisar de
+          mais informações ou quiser saber mais sobre como nossos produtos podem se encaixar no seu
+          ambiente, nossa equipe está à disposição para ajudar. Aproveite o verão com estilo e
+          conforto – porque cada momento merece ser vivido ao máximo!
+          <br /><br />
+          <div id="contato">
+            Empresa: {{ props.empresaDescricao }}
             <br />
-            Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
-            estação. Combinando sofisticação, conforto e praticidade, nossos móveis foram pensados
-            para oferecer a melhor experiência durante os dias mais quentes do ano. Se precisar de
-            mais informações ou quiser saber mais sobre como nossos produtos podem se encaixar no seu
-            ambiente, nossa equipe está à disposição para ajudar. Aproveite o verão com estilo e
-            conforto – porque cada momento merece ser vivido ao máximo!
-            <br /><br />
-            <div id="contato">
-              Empresa: {{ props.empresaDescricao }}
-              <br />
-              Telefone: (11) 9999-9999
-              <br />
-            </div>
+            Telefone: (11) 9999-9999
+            <br />
           </div>
         </div>
       </div>
-      <!-- Pesquisa de item -->
-      <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
-        <v-card>
-          <v-autocomplete
-            id="autocomplete"
-            label="Pesquisa"
-            clearable
-            :items="filtroProdutos"
-            item-title="nome"
-            v-model="(filtroProdutos as any).paginaDoProduto"
-            :return-object="true"
-            @update:modelValue="onSelect"
-          >
-          </v-autocomplete>
-          <v-btn @click="pesquisa">Fechar Pesquisa</v-btn>
-        </v-card>
-      </v-dialog>
-      <!-- Botões de navegação -->
-      <v-row id="todosBotoesDeNavegacao" >
-        <v-col class="d-flex justify-end">
-          <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
-        </v-col>
-        <v-col class="d-flex justify-center" id="botoesDeNavegacaoCentral">
-          <v-btn icon="mdi-home-outline" v-tooltip="'Mostruários'" @click="mostruario"></v-btn>
-          <v-btn icon="mdi-format-list-numbered-rtl" v-tooltip="'Sumário'" @click="selectPag(2)"></v-btn>
-          <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
-        </v-col>
-        <v-col class="d-flex justify-start" v-tooltip="'Próxima página'">
-          <v-btn icon="mdi-arrow-right-bold" @click="proxPag"></v-btn>
-        </v-col>
-      </v-row>
-    
+    </div>
+    <!-- Pesquisa de item -->
+    <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
+      <v-card>
+        <v-autocomplete
+          id="autocomplete"
+          label="Pesquisa"
+          clearable
+          :items="filtroProdutos"
+          item-title="nome"
+          v-model="(filtroProdutos as any).paginaDoProduto"
+          :return-object="true"
+          @update:modelValue="onSelect"
+        >
+        </v-autocomplete>
+        <v-btn @click="pesquisa">Fechar Pesquisa</v-btn>
+      </v-card>
+    </v-dialog>
+    <!-- Botões de navegação -->
+    <v-row id="todosBotoesDeNavegacao">
+      <v-col class="d-flex justify-end">
+        <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
+      </v-col>
+      <v-col class="d-flex justify-center" id="botoesDeNavegacaoCentral">
+        <v-btn icon="mdi-home-outline" v-tooltip="'Mostruários'" @click="mostruario"></v-btn>
+        <v-btn
+          icon="mdi-format-list-numbered-rtl"
+          v-tooltip="'Sumário'"
+          @click="selectPag(2)"
+        ></v-btn>
+        <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
+      </v-col>
+      <v-col class="d-flex justify-start" v-tooltip="'Próxima página'">
+        <v-btn icon="mdi-arrow-right-bold" @click="proxPag"></v-btn>
+      </v-col>
+    </v-row>
   </div>
   <!-- Abrir mostruario -->
   <div v-if="listarMostruarios">
@@ -209,7 +214,13 @@ import { Produto } from '@/classes/produtosCatalogo'
 import { PageFlip } from 'page-flip'
 import index from '@/pages/index.vue'
 
-const props = defineProps<{ catalogo: number; descricaoCatalago: string; empresa: number; empresaDescricao: string; produtos: Produto[] }>()
+const props = defineProps<{
+  catalogo: number
+  descricaoCatalago: string
+  empresa: number
+  empresaDescricao: string
+  produtos: Produto[]
+}>()
 const mostrarCapa = ref(true)
 const pageFlip = ref<PageFlip>()
 
@@ -219,26 +230,25 @@ const imgTelacheia = ref(false)
 const listarMostruarios = ref<boolean>(false)
 const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
-const windowWidth = ref(window.innerWidth);
-
+const windowWidth = ref(window.innerWidth)
 
 const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
+  windowWidth.value = window.innerWidth
+}
 
-const exibirDetalhamento = (produto: any) => { 
+const exibirDetalhamento = (produto: any) => {
   filtroProdutos.value.forEach((p) => {
-    p.mostrarDetalhamento = false;
-  });
-  produto.mostrarDetalhamento = true;
+    p.mostrarDetalhamento = false
+  })
+  produto.mostrarDetalhamento = true
 }
 
 const mostruario = () => {
   listarMostruarios.value = true
-  ocutarLivro.value = true 
+  ocutarLivro.value = true
 }
 
-const expandirImg = (produto:any) => {
+const expandirImg = (produto: any) => {
   produtoSelecionado.value = produto
   imgTelacheia.value = true
 }
@@ -273,7 +283,6 @@ const antPag = () => {
   }
 }
 
-
 function concatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor
   let variacao = item.desVariacao == 'INDEFINIDA' ? '' : item.desVariacao
@@ -289,8 +298,8 @@ function concatenarDetalhe(item: any) {
 
 onMounted(() => {
   construirLivro()
-  window.addEventListener('resize', construirLivro);
-  window.addEventListener('resize', updateWindowWidth);
+  window.addEventListener('resize', construirLivro)
+  window.addEventListener('resize', updateWindowWidth)
 })
 
 function construirLivro() {
@@ -300,7 +309,7 @@ function construirLivro() {
   pageFlip.value = new PageFlip(livroElemento, {
     width: window.innerWidth > 550 ? 550 : window.innerWidth * 0.9,
     height: window.innerHeight > 700 ? 700 : window.innerHeight * 0.8,
-    
+
     minWidth: 200,
     maxWidth: 1000,
     minHeight: 320,
@@ -309,8 +318,7 @@ function construirLivro() {
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
     mobileScrollSupport: false, // Desabilitar rolagem de conteúdo em dispositivos móveis
-    disableFlipByClick: true,
-
+    disableFlipByClick: true
   })
 
   const pages = document.querySelectorAll('.page') as NodeListOf<HTMLElement>
@@ -324,12 +332,11 @@ function construirLivro() {
       if (state.data === 'fold_corner') {
         console.log('Evento de dobrar canto da página')
         //state.preventDefault?.();
-        return;
+        return
       }
     })
   }
 }
-
 </script>
 
 <style>
@@ -337,19 +344,19 @@ body {
   overflow-x: hidden;
 }
 
-#btnTelaCheia{
-  position: fixed; 
-  top: 10px; 
-  right: 10px; 
+#btnTelaCheia {
+  position: fixed;
+  top: 10px;
+  right: 10px;
   z-index: 10;
 }
 
-#btnTelaDesc{
+#btnTelaDesc {
   margin-left: auto;
   margin-top: 0;
 }
 
-#cardDescricaoProduto{
+#cardDescricaoProduto {
   max-width: 100%;
   max-height: 100%;
   padding: 20px;
@@ -369,9 +376,9 @@ body {
   gap: 6px; /* Espaçamento entre os botões */
 }
 
-#todosBotoesDeNavegacao{
-  position: fixed; 
-  bottom: 0; 
+#todosBotoesDeNavegacao {
+  position: fixed;
+  bottom: 0;
   left: 0;
   right: 0;
   margin-bottom: 1px;
@@ -385,7 +392,7 @@ body {
   bottom: 20px;
   left: 0;
   right: 0;
-  padding: 20px; 
+  padding: 20px;
 }
 
 #ultimaPagina {
@@ -428,38 +435,37 @@ body {
 
 @media (max-width: 500px) {
   .carousel-img {
-  width: 95%;
-  max-width: 100%;
-  display: flex;
-  margin: auto;
-  flex: 1;
-  height: auto; 
-  align-items: flex-start;
+    width: 95%;
+    max-width: 100%;
+    display: flex;
+    margin: auto;
+    flex: 1;
+    height: auto;
+    align-items: flex-start;
   }
-  #ultimaPagina{
+  #ultimaPagina {
     font-size: 12px;
     text-align: center;
   }
-  #sheetTelaCheia{
+  #sheetTelaCheia {
     margin-top: 100%;
     margin: 2%;
-}
+  }
 }
 
 @media (min-width: 501px) {
   .carousel-img {
     width: 95%;
-    max-width: 1200px; 
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-
   }
-  #cardDescricaoProduto{
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  width: 700px;
-  margin: auto;
+  #cardDescricaoProduto {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 700px;
+    margin: auto;
   }
 }
 
@@ -524,10 +530,10 @@ h3 {
   box-shadow: 0 0 20px 0 rgba(208, 208, 208, 0.5) !important;
   display: block;
   background-size: cover !important;
- 
-  height: 0vh; 
+
+  height: 0vh;
   max-height: none;
-  overflow: hidden; 
+  overflow: hidden;
 }
 .page {
   padding: 5px;
@@ -567,7 +573,7 @@ h3 {
 
 .page .page-content .page-image img {
   max-width: 100%;
-  height: auto;;
+  height: auto;
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
@@ -613,5 +619,4 @@ h3 {
 .page.page-cover.page-cover-bottom {
   box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), 10px 0 8px 0px rgba(0, 0, 0, 0.4);
 }
-
 </style>
