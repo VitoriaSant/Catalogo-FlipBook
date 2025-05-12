@@ -5,13 +5,25 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
-import { setupLayouts } from 'virtual:generated-layouts'
-import { routes } from 'vue-router/auto-routes'
+import { createRouter, createWebHistory } from 'vue-router'
+
+// Definição manual das rotas
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import('@/pages/mostruarios.vue')
+  },
+  {
+    path: '/mostruario/:id',
+    name: 'Mostruario',
+    component: () => import('@/pages/mostruario.vue')
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: setupLayouts(routes),
+  routes
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804

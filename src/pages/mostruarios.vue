@@ -1,0 +1,109 @@
+<template>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
+
+  <div id="tabela">
+    <v-table v-if="listaMostruarios">
+      <thead>
+        <tr>
+          <th class="text-center">Códigos</th>
+          <th class="text-center">Mostruários</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(catalogo, id) in ListaCat"
+          :key="id"
+          @click="mostruariosSelecionado(catalogo.catalogo)"
+        >
+          <td class="text-center">{{ catalogo.catalogo }}</td>
+          <td class="text-center">{{ catalogo.descricaoCatalago }}</td>
+        </tr>
+      </tbody>
+    </v-table>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { getMostruarios } from '@/services/getMostruarios'
+import { useRouter } from 'vue-router'
+import Alerta from '@/components/alert.vue'
+import { Catalogo } from '@/classes/catalogo'
+
+const router = useRouter()
+const loading = ref<boolean>(false)
+const ListaCat = ref<Catalogo[]>([])
+const listaMostruarios = ref<boolean>(true)
+
+let alert = ref<boolean>(false)
+let mensagem = ''
+let tituloErro = ''
+
+onMounted(async () => {
+  loading.value = true
+  alert.value = false
+  try {
+    const resposta = await getMostruarios()
+    ListaCat.value = resposta.catalogos
+    loading.value = false
+  } 
+  catch (error: any) {
+    alert.value = true
+    loading.value = false
+    tituloErro = String(error.error.name)
+    mensagem = String(error.messageError + ' - ' + error.error.message)
+    
+  }
+})
+
+async function mostruariosSelecionado(idMostruarios: number) {
+  try {
+    loading.value = true
+    alert.value = false
+    listaMostruarios.value = false
+
+    router.push({ name: 'Mostruario', params: { id: idMostruarios } })
+  } catch (error: any) {
+    loading.value = false
+    alert.value = true
+    tituloErro = error?.error.name || 'Erro desconhecido'
+    mensagem = JSON.stringify(error.error.response.data.error) || error?.error.message || error?.message  || 'Erro desconhecido'
+  } finally {
+    loading.value = false
+  }
+}
+
+</script>
+<style>
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+table {
+  max-width: 95%;
+  margin: auto;
+  margin-top: 2%;
+  border-radius: 8px;
+  margin-bottom: 10%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border-collapse: collapse;
+}
+
+table tr:nth-child(even),
+thead {
+  background-color: #eeeeeefc;
+  border-radius: 8px;
+}
+
+table tbody tr:hover {
+  background-color: #adacac;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+</style>

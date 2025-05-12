@@ -1,10 +1,12 @@
 <template>
-  <div class="container" v-if="ocutarLivro === false">
+  <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
+  <div class="container">
     <div class="flip-book" id="book">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div id="capaCatalogo">
-          <h2>{{ props.descricaoCatalago }}</h2>
-          <h3>{{ props.empresaDescricao }}</h3>
+          <h2>{{ lista?.descricaoCatalago }}</h2>
+          <h3>{{ lista?.empresaDescricao }}</h3>
         </div>
       </div>
       <!-- Sumario -->
@@ -14,13 +16,9 @@
           <v-btn
             id="opc-sumario"
             variant="plain"
-            @click="
-              selectPag(Math.ceil(filtroProdutos.length / 25) + 1 + (produto.paginaDoProduto ?? 0))
-            "
+            @click="selectPag(numPag + 1 + (produto.paginaDoProduto ?? 0))"
           >
-            <div id="text-opc-sumario">
-              {{ (produto.paginaDoProduto = (numPag - 1) * 25 + i + 1) }} - {{ 'Nome do Produto' }}
-            </div>
+            <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ 'Nome do Produto' }}</div>
           </v-btn>
         </p>
       </div>
@@ -146,9 +144,9 @@
         </v-dialog>
       </div>
       <!-- Ultima pagina -->
-      <div v-if="mostrarCapa" class="page page-cover page-cover-bottom" data-density="hard">
+      <div class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
-          <div id="tituloCatalogo">{{ props.descricaoCatalago }}</div>
+          <div id="tituloCatalogo">{{ lista?.descricaoCatalago }}</div>
           Obrigado por explorar nosso Catálogo de Verão!
           <br />
           Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
@@ -159,7 +157,7 @@
           conforto – porque cada momento merece ser vivido ao máximo!
           <br /><br />
           <div id="contato">
-            Empresa: {{ props.empresaDescricao }}
+            Empresa: {{ lista?.empresaDescricao }}
             <br />
             Telefone: (11) 9999-9999
             <br />
@@ -203,34 +201,36 @@
       </v-col>
     </v-row>
   </div>
-  <!-- Abrir mostruario -->
-  <div v-if="listarMostruarios">
-    <index />
-  </div>
 </template>
 
 <script lang="ts" setup>
 import { Produto } from '@/classes/produtosCatalogo'
 import { PageFlip } from 'page-flip'
-import index from '@/pages/index.vue'
+import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { getProdutos } from '../services/getItens'
+import { ListaProduto } from '@/classes/produtosCatalogo'
+import Alerta from '@/components/alert.vue'
 
-const props = defineProps<{
-  catalogo: number
-  descricaoCatalago: string
-  empresa: number
-  empresaDescricao: string
-  produtos: Produto[]
-}>()
-const mostrarCapa = ref(true)
+interface RouteParams {
+  id: string
+}
+
 const pageFlip = ref<PageFlip>()
-
-const filtroProdutos = ref<Produto[]>(props.produtos)
+const filtroProdutos = ref<Produto[]>([])
+const lista = ref<ListaProduto | null>(null)
 const ativarPesquisa = ref(false)
 const imgTelacheia = ref(false)
-const listarMostruarios = ref<boolean>(false)
-const ocutarLivro = ref<boolean>(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
 const windowWidth = ref(window.innerWidth)
+const route = useRoute()
+const router = useRouter()
+const id = (route.params as RouteParams).id as string
+const loading = ref<boolean>(false)
+
+let alert = ref<boolean>(false)
+let mensagem = ''
+let tituloErro = ''
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
@@ -244,8 +244,7 @@ const exibirDetalhamento = (produto: any) => {
 }
 
 const mostruario = () => {
-  listarMostruarios.value = true
-  ocutarLivro.value = true
+  router.push('/')
 }
 
 const expandirImg = (produto: any) => {
@@ -296,15 +295,68 @@ function concatenarDetalhe(item: any) {
   return descricaoConcatenada ? descricaoConcatenada.slice(2) : 'INDEFINIDO'
 }
 
-onMounted(() => {
-  construirLivro()
-  window.addEventListener('resize', construirLivro)
-  window.addEventListener('resize', updateWindowWidth)
+onMounted(async () => {
+  try {
+    loading.value = true
+    alert.value = false
+
+    const produtos = await getProdutos(id as unknown as number)
+    lista.value = new ListaProduto(
+      produtos.catalogo,
+      produtos.descricaoCatalago,
+      produtos.empresa,
+      produtos.empresaDescricao,
+      ordenarProdutos(produtos.produtos)
+    )
+    filtroProdutos.value = lista.value.produtos
+
+    console.log('Lista de produtos:', lista.value)
+    console.log('Filtro:', filtroProdutos.value)
+
+    filtroProdutos.value.forEach((produto, index) => {
+      produto.paginaDoProduto = Math.floor(index / 25) + 1
+    })
+
+    await nextTick()
+    construirLivro()
+
+    window.addEventListener('resize', construirLivro)
+    window.addEventListener('resize', updateWindowWidth)
+  } catch (error: any) {
+    loading.value = false
+    alert.value = true
+    tituloErro = error?.error.name || 'Erro desconhecido'
+    mensagem = JSON.stringify(error.error.response.data.error) || error?.error.message || error?.message  || 'Erro desconhecido'
+  } finally {
+    loading.value = false
+  }
 })
 
+// Função para ordenar os produtos por nome
+function ordenarProdutos(produtos: any) {
+  return produtos.sort((a: any, b: any) => {
+    // // Ordena primeiro pelo 'grupo'
+    // if (a.grupo < b.grupo) return -1
+    // if (a.grupo > b.grupo) return 1
+
+    if (a.nome < b.nome) return -1
+    if (a.nome > b.nome) return 1
+
+    return 0
+  })
+}
+
 function construirLivro() {
+  if (filtroProdutos.value.length === 0) {
+    console.error('Filtro de produtos está vazio. Não é possível construir o livro.')
+    return
+  }
+
   const livroElemento = document.getElementById('book')
-  if (!livroElemento) return
+  if (!livroElemento) {
+    console.error('Elemento #book não encontrado')
+    return
+  }
 
   pageFlip.value = new PageFlip(livroElemento, {
     width: window.innerWidth > 550 ? 550 : window.innerWidth * 0.9,
@@ -342,6 +394,13 @@ function construirLivro() {
 <style>
 body {
   overflow-x: hidden;
+}
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 #btnTelaCheia {
@@ -402,7 +461,6 @@ body {
 
 #contato {
   text-align: center;
-  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
