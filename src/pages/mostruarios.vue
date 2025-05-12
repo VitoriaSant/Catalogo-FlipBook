@@ -3,7 +3,7 @@
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
 
-  <div id="tabela">
+  <div id="tabela" v-if="tabela">
     <v-table v-if="listaMostruarios">
       <thead>
         <tr>
@@ -36,6 +36,7 @@ const router = useRouter()
 const loading = ref<boolean>(false)
 const ListaCat = ref<Catalogo[]>([])
 const listaMostruarios = ref<boolean>(true)
+const tabela = ref<boolean>(true)
 
 let alert = ref<boolean>(false)
 let mensagem = ''
@@ -51,6 +52,7 @@ onMounted(async () => {
   } 
   catch (error: any) {
     alert.value = true
+    tabela.value = false
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(error.messageError + ' - ' + error.error.message)
@@ -64,7 +66,7 @@ async function mostruariosSelecionado(idMostruarios: number) {
     alert.value = false
     listaMostruarios.value = false
 
-    router.push({ name: 'Mostruario', params: { id: idMostruarios } })
+    router.push({ path: `/mostruario/${idMostruarios}` })
   } catch (error: any) {
     loading.value = false
     alert.value = true
