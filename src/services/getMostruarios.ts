@@ -12,11 +12,12 @@ interface listaError {
 export async function getMostruarios(): Promise<ListaCatalogos> {
   try {
     const { data } = await api.get<ListaResposta>(import.meta.env.VITE_LISTAR_MOSTRUARIOS)
-    const listaCat = new ListaCatalogos([])
-    for (const registro of data.catalogos) {
-      listaCat.catalogos.push(new Catalogo(registro))
-    }
-    return listaCat
+    // const listaCat = new ListaCatalogos([])
+    // for (const registro of data) {
+    //   listaCat.catalogos.push(new Catalogo(registro))
+    //   console.log('aqui',listaCat.catalogos)
+    // }
+    return data
   } catch (error) {
     throw {
       idError: 'ERR_AUTH',
