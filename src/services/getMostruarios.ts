@@ -1,4 +1,3 @@
-import { Catalogo, ListaCatalogos } from '@/classes/catalogo'
 import { api } from '@/services/api'
 
 interface ListaResposta {
@@ -9,20 +8,30 @@ interface listaError {
   messageError: string
   error: unknown
 }
-export async function getMostruarios(): Promise<ListaCatalogos> {
+export async function getMostruarios(){
   try {
     const { data } = await api.get<ListaResposta>(import.meta.env.VITE_LISTAR_MOSTRUARIOS)
-    // const listaCat = new ListaCatalogos([])
-    // for (const registro of data) {
-    //   listaCat.catalogos.push(new Catalogo(registro))
-    //   console.log('aqui',listaCat.catalogos)
-    // }
+    if (data.length === 0) {
+      throw {
+        idError: 'ERR_VOID',
+        messageError: 'Nenhum catálogo encontrado'
+      } as listaError
+    }
     return data
   } catch (error) {
-    throw {
-      idError: 'ERR_AUTH',
-      messageError: 'Falha na listagem dos catálogos',
-      error
-    } as listaError
+    if (error.idError === 'ERR_VOID') {
+      throw{
+        idError: error.idError,
+        messageError: error.messageError,
+        error
+      } 
+    }else {
+      throw {	
+        idError: 'ERR_AUTH',
+        messageError: 'Falha na listagem dos catálogos',
+        error
+      } as listaError
+    }
+    
   }
 }
