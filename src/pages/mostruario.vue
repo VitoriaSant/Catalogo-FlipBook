@@ -5,8 +5,8 @@
     <div class="flip-book" id="book">
       <div class="page page-cover page-cover-top" data-density="hard">
         <div id="capaCatalogo">
-          <h2>{{ lista?.descricaoCatalago }}</h2>
-          <h3>{{ lista?.empresaDescricao }}</h3>
+          <h2>{{ lista?.descricaoMst }}</h2>
+          <h3>{{ lista?.descricaoEmpresa }}</h3>
         </div>
       </div>
       <!-- Sumario -->
@@ -16,16 +16,16 @@
           <v-btn
             id="opc-sumario"
             variant="plain"
-            @click="selectPag(numPag + 1 + (produto.paginaDoProduto ?? 0))"
+            @click="selectPag(1 + Math.ceil(filtroProdutos.length / 25) + i + (numPag - 1) * 25)"
           >
-            <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ 'Nome do Produto' }}</div>
+            <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ produto?.descricao }}</div>
           </v-btn>
         </p>
       </div>
       <!-- Pagina de produtos -->
       <div class="page" v-for="(produto, index) in filtroProdutos" :key="index">
         <div class="page-content">
-          <h1 class="page-header">{{ 'Nome do Produto' }}</h1>
+          <h1 class="page-header">{{ produto?.descricao }}</h1>
           <!-- Imagem do Produto -->
           <div class="carousel-img">
             <v-carousel
@@ -50,7 +50,7 @@
               <v-select
                 class="w-100"
                 label="Detalhamento"
-                :items="produto.detalhamento"
+                :items="produto.detalhamentos"
                 :item-title="(item) => concatenarDetalhe(item)"
                 :return-object="true"
                 v-model="produto.detalhamentoSelecionado"
@@ -69,9 +69,9 @@
                       icon="mdi-close"
                       @click="produto.mostrarDetalhamento = false"
                     ></v-btn>
-                    {{ 'Nome do Produto' }}
-                    <br />
                     {{ produto.descricao }}
+                    <br />
+                    {{ produto.descricaoResumida }}
                     <template v-if="produto.colecao !== 'INDEFINIDA'">
                       <br />
                       Coleção: {{ produto.colecao }}
@@ -146,7 +146,7 @@
       <!-- Ultima pagina -->
       <div class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
-          <div id="tituloCatalogo">{{ lista?.descricaoCatalago }}</div>
+          <div id="tituloCatalogo">{{ lista?.descricaoMst }}</div>
           Obrigado por explorar nosso Catálogo de Verão!
           <br />
           Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
@@ -157,7 +157,7 @@
           conforto – porque cada momento merece ser vivido ao máximo!
           <br /><br />
           <div id="contato">
-            Empresa: {{ lista?.empresaDescricao }}
+            Empresa: {{ lista?.descricaoEmpresa }}
             <br />
             Telefone: (11) 9999-9999
             <br />
@@ -192,7 +192,7 @@
         <v-btn
           icon="mdi-format-list-numbered-rtl"
           v-tooltip="'Sumário'"
-          @click="selectPag(2)"
+          @click="selectPag(1)"
         ></v-btn>
         <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
       </v-col>
@@ -302,19 +302,22 @@ onMounted(async () => {
 
     const produtos = await getProdutos(id as unknown as number)
     lista.value = new ListaProduto(
-      produtos.catalogo,
-      produtos.descricaoCatalago,
-      produtos.empresa,
-      produtos.empresaDescricao,
+      produtos.autoincMst,
+      produtos.descricaoMst,
+      produtos.codigoEmpresa,
+      produtos.descricaoEmpresa,
       ordenarProdutos(produtos.produtos)
     )
     filtroProdutos.value = lista.value.produtos
 
-    console.log('Lista de produtos:', lista.value)
-    console.log('Filtro:', filtroProdutos.value)
-
     filtroProdutos.value.forEach((produto, index) => {
-      produto.paginaDoProduto = Math.floor(index / 25) + 1
+      produto.paginaDoProduto = Math.floor(index + 1)
+    })
+
+    filtroProdutos.value.forEach((produto) => {
+      if (produto.detalhamentos && produto.detalhamentos.length > 0) {
+        produto.detalhamentoSelecionado = produto.detalhamentos[0]
+      }
     })
 
     await nextTick()
@@ -369,7 +372,7 @@ function construirLivro() {
 
     maxShadowOpacity: -0.5, // Intensidade de meia sombra
     showCover: true,
-    mobileScrollSupport: false, // Desabilitar rolagem de conteúdo em dispositivos móveis
+    mobileScrollSupport: true, // Desabilitar rolagem de conteúdo em dispositivos móveis
     disableFlipByClick: true
   })
 

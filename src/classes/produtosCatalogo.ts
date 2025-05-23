@@ -36,7 +36,7 @@ export class Produto {
   pesoLiquido: number
   videos: Videos[]
 
-  detalhamento: Detalhamento[]
+  detalhamentos: Detalhamento[]
 
   // Propriedade para os componentes
   detalhamentoSelecionado?: Detalhamento
@@ -59,36 +59,45 @@ export class Produto {
     this.pesoBruto = pObjeto.pesoBruto
     this.pesoLiquido = pObjeto.pesoLiquido
     this.videos = pObjeto.videos ?? []
-    this.detalhamento = pObjeto.detalhamento ?? []
+
+    this.detalhamentos = (pObjeto.detalhamentos ?? []).map((det: any) => ({
+      sku: det.sku,
+      descricao: det.descricao,
+      detalhamento: det.detalhamento,
+      variacao: det.codigoVariacao,
+      desVariacao: det.descricaoVariacao,
+      cor: det.codigoCor,
+      desCor: det.descricaoCor,
+      acabamento: det.codigoAcabamento,
+      desAcabamento: det.descricaoAcabamento,
+      imagens: det.imagens ?? []
+    }));
 
     this.paginaDoProduto = 0
     this.mostrarDetalhamento = false
 
-    if (this.detalhamento && this.detalhamento.length > 0) {
-      this.detalhamentoSelecionado = pObjeto.detalhamento[0] // Assumindo que a primeira imagem seja a padrão
-    }
   }
 }
 
 export class ListaProduto {
-  catalogo: number
-  descricaoCatalago: string = ''
-  empresa: number
-  empresaDescricao: string = ''
+  autoincMst: number
+  descricaoMst: string = ''
+  codigoEmpresa: number
+  descricaoEmpresa: string = ''
 
   produtos: Produto[] = []
 
   constructor(
-    pCatalogo: number,
-    pDescricaoCatalago: string,
-    pEmpresa: number,
-    pEmpresaDescricao: string,
+    pAutoincMst: number,
+    pDescricaoMst: string,
+    pCodigoEmpresa: number,
+    pDescricaoEmpresa: string,
     pProdutos: Produto[] = []
   ) {
-    this.catalogo = pCatalogo
-    this.descricaoCatalago = pDescricaoCatalago
-    this.empresa = pEmpresa
-    this.empresaDescricao = pEmpresaDescricao
+    this.autoincMst = pAutoincMst
+    this.descricaoMst = pDescricaoMst
+    this.codigoEmpresa = pCodigoEmpresa
+    this.descricaoEmpresa = pDescricaoEmpresa
     this.produtos = pProdutos
   }
 }
