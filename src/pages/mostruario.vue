@@ -63,7 +63,7 @@
                 <!-- Descricao do produto -->
                 <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
                 <v-dialog v-model="produto.mostrarDetalhamento">
-                  <v-card id="cardDescricaoProduto">
+                  <v-card id="cardDescricaoEPesquisa">
                     <v-btn
                       id="btnTelaDesc"
                       icon="mdi-close"
@@ -167,14 +167,14 @@
     </div>
     <!-- Pesquisa de item -->
     <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
-      <v-card>
+      <v-card id="cardDescricaoEPesquisa">
         <v-autocomplete
           id="autocomplete"
           label="Pesquisa"
           clearable
           :items="filtroProdutos"
-          item-title="nome"
-          v-model="(filtroProdutos as any).paginaDoProduto"
+          :item-title="'descricao'" 
+          v-model="produtoSelecionado"
           :return-object="true"
           @update:modelValue="onSelect"
         >
@@ -258,7 +258,7 @@ const pesquisa = () => {
 
 const onSelect = (produtoSelecionado: any) => {
   if (produtoSelecionado && produtoSelecionado.paginaDoProduto) {
-    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25) + 1
+    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25)
     const pagina = produtoSelecionado.paginaDoProduto + totalPaginas
     selectPag(pagina)
   }
@@ -319,6 +319,10 @@ onMounted(async () => {
         produto.detalhamentoSelecionado = produto.detalhamentos[0]
       }
     })
+
+    if (filtroProdutos.value.length > 0) {
+      produtoSelecionado.value = filtroProdutos.value[0]
+    }
 
     await nextTick()
     construirLivro()
@@ -418,7 +422,7 @@ body {
   margin-top: 0;
 }
 
-#cardDescricaoProduto {
+#cardDescricaoEPesquisa {
   max-width: 100%;
   max-height: 100%;
   padding: 20px;
@@ -523,7 +527,7 @@ body {
     align-items: flex-start;
     justify-content: center;
   }
-  #cardDescricaoProduto {
+  #cardDescricaoEPesquisa {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     width: 700px;
     margin: auto;
