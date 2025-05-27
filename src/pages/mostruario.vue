@@ -1,16 +1,20 @@
-<template>
+aPagina<template>
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
   <div class="container">
     <div class="flip-book" id="book">
-      <div class="page page-cover page-cover-top" data-density="hard">
+      <div class="page page-cover page-cover-top" >
         <div id="capaCatalogo">
           <h2>{{ lista?.descricaoMst }}</h2>
-          <h3>{{ lista?.descricaoEmpresa }}</h3>
         </div>
       </div>
-      <!-- Sumario -->
-      <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
+      <!-- Sumario
+      <Sumario v-if="mostrarSumario" 
+      :valorModal="mostrarSumario"
+      @update:mostrarSumario="mostrarSumario = $event"
+      /> -->
+
+      <!-- <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
         <p id="text-sumario">Sumário</p>
         <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
           <v-btn
@@ -21,7 +25,7 @@
             <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ produto?.descricao }}</div>
           </v-btn>
         </p>
-      </div>
+      </div> -->
       <!-- Pagina de produtos -->
       <div class="page" v-for="(produto, index) in filtroProdutos" :key="index">
         <div class="page-content">
@@ -44,67 +48,39 @@
               </v-carousel-item>
             </v-carousel>
           </div>
-          <v-row id="botoesPagina">
             <!-- Seleçao de detalhamento -->
-            <v-col cols="8" class="d-flex">
               <v-select
-                class="w-100"
+                class="w-100 altura-fixa-select gb-1"
                 label="Detalhamento"
+                variant="solo-filled"
+                density="compact"
                 :items="produto.detalhamentos"
                 :item-title="(item) => concatenarDetalhe(item)"
                 :return-object="true"
                 v-model="produto.detalhamentoSelecionado"
               >
-              </v-select>
-            </v-col>
+              </v-select>    
+          <v-row class="d-flex justify-center" id="botoesPagina" >
             <!-- Botão de descricao do produto -->
-            <v-col cols="2" class="d-flex justify-center btnInfo">
+            <v-col cols="6" class="d-flex justify-end btnInfo ">
               <div>
                 <!-- Descricao do produto -->
-                <v-btn icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
-                <v-dialog v-model="produto.mostrarDetalhamento">
-                  <v-card id="cardDescricaoEPesquisa">
-                    <v-btn
-                      id="btnTelaDesc"
-                      icon="mdi-close"
-                      @click="produto.mostrarDetalhamento = false"
-                    ></v-btn>
-                    {{ produto.descricao }}
-                    <br />
-                    {{ produto.descricaoResumida }}
-                    <template v-if="produto.colecao !== 'INDEFINIDA'">
-                      <br />
-                      Coleção: {{ produto.colecao }}
-                    </template>
-                    <template v-if="produto.linha !== 'INDEFINIDA'">
-                      <br />
-                      Linha: {{ produto.linha }}
-                    </template>
-                    <template v-if="produto.grupo !== 'INDEFINIDO'">
-                      <br />
-                      Grupo: {{ produto.grupo }}
-                    </template>
-                    <template
-                      v-if="
-                        produto.altura !== 0 || produto.largura !== 0 || produto.comprimento !== 0
-                      "
-                    >
-                      <br />
-                      Altura: {{ produto.altura }} | Largura: {{ produto.largura }} | Comprimento:
-                      {{ produto.comprimento }}
-                    </template>
-                    <template v-if="produto.pesoBruto !== 0 || produto.pesoLiquido !== 0">
-                      <br />
-                      Preço Bruto: {{ produto.pesoBruto }} | Peso Liquido: {{ produto.pesoLiquido }}
-                    </template>
-                  </v-card>
-                </v-dialog>
+                <v-btn variant="tonal" v-tooltip="'Descrição'" icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
+                <Descricao 
+                v-if="mostrarDescricao" 
+                :valorModal="mostrarDescricao" 
+                :produto="{
+                  ...produto,
+                  mostrarDetalhamento: produto.mostrarDetalhamento ?? false
+                }"       
+                @update:mostrarDetalhamento="produto.mostrarDetalhamento = $event"/>
+                
               </div>
             </v-col>
             <!-- Expandir imagem -->
-            <v-col cols="2" class="d-flex justify-center btnInfo">
+            <v-col cols="6" class="d-flex justify-start btnInfo">
               <div>
-                <v-btn icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn>
+                <v-btn variant="tonal" v-tooltip="'Expandir'" icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn>
               </div>
             </v-col>
           </v-row>
@@ -146,21 +122,9 @@
       <!-- Ultima pagina -->
       <div class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
-          <div id="tituloCatalogo">{{ lista?.descricaoMst }}</div>
-          Obrigado por explorar nosso Catálogo de Verão!
-          <br />
-          Esperamos que tenha encontrado as peças perfeitas para transformar seus espaços nesta
-          estação. Combinando sofisticação, conforto e praticidade, nossos móveis foram pensados
-          para oferecer a melhor experiência durante os dias mais quentes do ano. Se precisar de
-          mais informações ou quiser saber mais sobre como nossos produtos podem se encaixar no seu
-          ambiente, nossa equipe está à disposição para ajudar. Aproveite o verão com estilo e
-          conforto – porque cada momento merece ser vivido ao máximo!
-          <br /><br />
-          <div id="contato">
-            Empresa: {{ lista?.descricaoEmpresa }}
-            <br />
-            Telefone: (11) 9999-9999
-            <br />
+          <div>
+            {{ lista?.descricaoMst }}
+            <p>Fim</p>
           </div>
         </div>
       </div>
@@ -183,24 +147,21 @@
       </v-card>
     </v-dialog>
     <!-- Botões de navegação -->
-    <v-row id="todosBotoesDeNavegacao">
-      <v-col class="d-flex justify-end">
-        <v-btn icon="mdi-arrow-left-bold" v-tooltip="'Página anterior'" @click="antPag"></v-btn>
-      </v-col>
-      <v-col class="d-flex justify-center" id="botoesDeNavegacaoCentral">
-        <v-btn icon="mdi-home-outline" v-tooltip="'Mostruários'" @click="mostruario"></v-btn>
-        <v-btn
-          icon="mdi-format-list-numbered-rtl"
-          v-tooltip="'Sumário'"
-          @click="selectPag(1)"
-        ></v-btn>
-        <v-btn icon="mdi-magnify" v-tooltip="'Pesquisa'" @click="pesquisa"></v-btn>
-      </v-col>
-      <v-col class="d-flex justify-start" v-tooltip="'Próxima página'">
-        <v-btn icon="mdi-arrow-right-bold" @click="proxPag"></v-btn>
-      </v-col>
-    </v-row>
+    <BotoesDeNavegacao 
+    @onclickSumario="onclickSumario"
+    @mostruario="mostruario"  
+    @pesquisa="pesquisa"
+    @antPag="antPag"
+    @proxPag="proxPag"
+    />
+
+    <!-- Sumario -->
+      <Sumario v-if="mostrarSumario" 
+      :valorModal="mostrarSumario"
+      @update:mostrarSumario="mostrarSumario = $event"
+      />
   </div>
+  
 </template>
 
 <script lang="ts" setup>
@@ -210,7 +171,10 @@ import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { getProdutos } from '../services/getItens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
-import Alerta from '@/components/alert.vue'
+import Alerta from '@/components/Alert.vue'
+import Sumario from '@/components/Sumario.vue'
+import Descricao from '@/components/Descricao.vue'
+import BotoesDeNavegacao from '@/components/BotoesDeNavegacao.vue'
 
 interface RouteParams {
   id: string
@@ -228,9 +192,18 @@ const router = useRouter()
 const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
 
+
+let mostrarDescricao = ref<boolean>(false)
+let mostrarSumario = ref<boolean>(false)
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
+
+const onclickSumario = () => {
+  console.log(mostrarSumario.value)
+  mostrarSumario.value = true 
+  console.log(mostrarSumario.value)
+}
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
@@ -241,6 +214,7 @@ const exibirDetalhamento = (produto: any) => {
     p.mostrarDetalhamento = false
   })
   produto.mostrarDetalhamento = true
+  mostrarDescricao.value = true
 }
 
 const mostruario = () => {
@@ -385,20 +359,21 @@ function construirLivro() {
 
   pageFlip.value.loadFromHTML(pages)
 
-  // Identifica o momento que o evento fold_corner acontece
-  if (pageFlip.value) {
-    pageFlip.value.on('changeState', (state) => {
-      if (state.data === 'fold_corner') {
-        console.log('Evento de dobrar canto da página')
-        //state.preventDefault?.();
-        return
-      }
-    })
-  }
 }
 </script>
 
 <style>
+
+.altura-fixa-select .v-input__control {
+  min-height: 40px !important; /* Ajuste o valor conforme necessário */
+}
+
+@media (max-width: 600px) {
+  .altura-fixa-select .v-input__control {
+    min-height: 40px !important; /* Mesmo valor para celular */
+  }
+}
+
 body {
   overflow-x: hidden;
 }
@@ -438,44 +413,15 @@ body {
   justify-content: center;
 }
 
-#botoesDeNavegacaoCentral {
-  gap: 6px; /* Espaçamento entre os botões */
-}
 
-#todosBotoesDeNavegacao {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-bottom: 1px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-#botoesPagina {
-  display: flex;
-  justify-content: space-between; /* Distribui os botões horizontalmente */
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  padding: 20px;
-}
 
 #ultimaPagina {
-  font-size: 15px;
-  text-align: center;
-}
-
-#contato {
-  text-align: center;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 50px;
-}
-
-#tituloCatalogo {
   font-size: 25px;
+  text-align: center;
+  color: #545454;
+  font-weight: bold;
+  margin-top: 50%;
+  margin-bottom: 50%;
 }
 
 #text-sumario {
@@ -498,6 +444,7 @@ body {
   width: 90%;
 }
 
+
 @media (max-width: 500px) {
   .carousel-img {
     width: 95%;
@@ -516,6 +463,16 @@ body {
     margin-top: 100%;
     margin: 2%;
   }
+  #botoesPagina {
+  display: flex;
+  justify-content: space-between; /* Distribui os botões horizontalmente */
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  height: 80px;
+  right: 0;
+  margin-top: 50px;
+}
 }
 
 @media (min-width: 501px) {
@@ -532,6 +489,16 @@ body {
     width: 700px;
     margin: auto;
   }
+  #botoesPagina {
+  display: flex;
+  justify-content: space-between; /* Distribui os botões horizontalmente */
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  height: 70px;
+  right: 0;
+  margin-top: 50px;
+}
 }
 
 v-img {
@@ -572,9 +539,9 @@ img {
   margin-top: 1%;
 }
 
-.select-detalhe {
+/* .select-detalhe {
   margin-top: 3%;
-}
+} */
 
 .page img {
   width: 500%;
@@ -649,7 +616,7 @@ h3 {
   border-top: solid 1px hsl(248, 57%, 90%);
   font-size: 80%;
   color: hsl(251, 20%, 50%);
-  margin-top: auto;
+  margin-top: 8%;
 }
 
 .page.--left {

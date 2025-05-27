@@ -8,13 +8,19 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     2: typeof import('./components/book copy 2.vue')['default']
-    Alert: typeof import('./components/alert.vue')['default']
+    Alert: typeof import('./components/Alert.vue')['default']
     Book: typeof import('./components/book.vue')['default']
+    BotoesDeNavegacao: typeof import('./components/BotoesDeNavegacao.vue')['default']
     Catalogo: typeof import('./components/Catalogo.vue')['default']
     copy: typeof import('./components/listarCatalogos copy.vue')['default']
+    Descricao: typeof import('./components/Descricao.vue')['default']
+    ExpandirFoto: typeof import('./components/ExpandirFoto.vue')['default']
+    ImagensPagina: typeof import('./components/ImagensPagina.vue')['default']
     ListarCatalogos: typeof import('./components/listarCatalogos.vue')['default']
+    Pesquisa: typeof import('./components/Pesquisa.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sumario: typeof import('./components/Sumario.vue')['default']
     Teste: typeof import('./components/teste.vue')['default']
   }
 }

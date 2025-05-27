@@ -1,7 +1,7 @@
 <template>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
-  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
 
   <div id="tabela" v-if="tabela">
     <v-table v-if="listaMostruarios">
@@ -29,7 +29,7 @@
 import { ref, onMounted } from 'vue'
 import { getMostruarios } from '@/services/getMostruarios'
 import { useRouter } from 'vue-router'
-import Alerta from '@/components/alert.vue'
+import Alerta from '@/components/Alert.vue'
 
 const router = useRouter()
 const loading = ref<boolean>(false)
@@ -48,14 +48,12 @@ onMounted(async () => {
     const resposta = await getMostruarios()
     ListaCat.value = resposta
     loading.value = false
-  } 
-  catch (error: any) {
+  } catch (error: any) {
     alert.value = true
     tabela.value = false
     loading.value = false
     tituloErro = String(error.error.name)
     mensagem = String(error.messageError + ' - ' + error.error.message)
-    
   }
 })
 
@@ -70,12 +68,15 @@ async function mostruariosSelecionado(idMostruarios: number) {
     loading.value = false
     alert.value = true
     tituloErro = error?.error.name || 'Erro desconhecido'
-    mensagem = JSON.stringify(error.error.response.data.error) || error?.error.message || error?.message  || 'Erro desconhecido'
+    mensagem =
+      JSON.stringify(error.error.response.data.error) ||
+      error?.error.message ||
+      error?.message ||
+      'Erro desconhecido'
   } finally {
     loading.value = false
   }
 }
-
 </script>
 <style>
 #loading {

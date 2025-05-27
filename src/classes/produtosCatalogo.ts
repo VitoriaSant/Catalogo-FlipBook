@@ -75,6 +75,7 @@ export class Produto {
 
     this.paginaDoProduto = 0
     this.mostrarDetalhamento = false
+    this.mostrarDetalhamento = false
 
   }
 }
