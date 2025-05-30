@@ -41,7 +41,7 @@ export class Produto {
   // Propriedade para os componentes
   detalhamentoSelecionado?: Detalhamento
   paginaDoProduto?: number
-  mostrarDetalhamento?: boolean
+  mostrarDescricao?: boolean
 
   constructor(pObjeto: Produto) {
     this.item = pObjeto.item

@@ -48,6 +48,7 @@ onMounted(async () => {
     const resposta = await getMostruarios()
     ListaCat.value = resposta
     loading.value = false
+
   } catch (error: any) {
     alert.value = true
     tabela.value = false

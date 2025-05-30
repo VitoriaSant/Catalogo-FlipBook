@@ -1,31 +1,13 @@
-aPagina<template>
+<template class="bg-custom_gray">
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
   <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
-  <div class="container">
+  <div class="container bg-custom_gray">
     <div class="flip-book" id="book">
       <div class="page page-cover page-cover-top" >
         <div id="capaCatalogo">
           <h2>{{ lista?.descricaoMst }}</h2>
         </div>
       </div>
-      <!-- Sumario
-      <Sumario v-if="mostrarSumario" 
-      :valorModal="mostrarSumario"
-      @update:mostrarSumario="mostrarSumario = $event"
-      /> -->
-
-      <!-- <div class="page" v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
-        <p id="text-sumario">Sumário</p>
-        <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
-          <v-btn
-            id="opc-sumario"
-            variant="plain"
-            @click="selectPag(1 + Math.ceil(filtroProdutos.length / 25) + i + (numPag - 1) * 25)"
-          >
-            <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ produto?.descricao }}</div>
-          </v-btn>
-        </p>
-      </div> -->
       <!-- Pagina de produtos -->
       <div class="page" v-for="(produto, index) in filtroProdutos" :key="index">
         <div class="page-content">
@@ -37,6 +19,7 @@ aPagina<template>
               show-arrows="hover"
               hide-delimiter-background
               width="100%"
+              :continuous="false"
             >
               <v-carousel-item
                 v-for="(detalhe, imgId) in produto.detalhamentoSelecionado?.imagens"
@@ -64,16 +47,15 @@ aPagina<template>
             <!-- Botão de descricao do produto -->
             <v-col cols="6" class="d-flex justify-end btnInfo ">
               <div>
-                <!-- Descricao do produto -->
                 <v-btn variant="tonal" v-tooltip="'Descrição'" icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
                 <Descricao 
-                v-if="mostrarDescricao" 
-                :valorModal="mostrarDescricao" 
+                v-if="exibirDescricao" 
+                :valorModal="exibirDescricao" 
                 :produto="{
                   ...produto,
-                  mostrarDetalhamento: produto.mostrarDetalhamento ?? false
+                  mostrarDescricao: produto.mostrarDescricao ?? false
                 }"       
-                @update:mostrarDetalhamento="produto.mostrarDetalhamento = $event"/>
+                @update:mostrarDescricao="produto.mostrarDescricao = $event"/>
                 
               </div>
             </v-col>
@@ -156,9 +138,11 @@ aPagina<template>
     />
 
     <!-- Sumario -->
-      <Sumario v-if="mostrarSumario" 
+      <Sumario v-if="mostrarSumario"
+      :filtroProdutos="filtroProdutos"
       :valorModal="mostrarSumario"
-      @update:mostrarSumario="mostrarSumario = $event"
+      @selectPag="selectPag"
+      @update:valorModal="mostrarSumario = $event"
       />
   </div>
   
@@ -193,16 +177,14 @@ const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
 
 
-let mostrarDescricao = ref<boolean>(false)
+let exibirDescricao = ref<boolean>(false)
 let mostrarSumario = ref<boolean>(false)
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
 const onclickSumario = () => {
-  console.log(mostrarSumario.value)
-  mostrarSumario.value = true 
-  console.log(mostrarSumario.value)
+  mostrarSumario.value = true	
 }
 
 const updateWindowWidth = () => {
@@ -211,10 +193,10 @@ const updateWindowWidth = () => {
 
 const exibirDetalhamento = (produto: any) => {
   filtroProdutos.value.forEach((p) => {
-    p.mostrarDetalhamento = false
+    p.mostrarDescricao = false
   })
-  produto.mostrarDetalhamento = true
-  mostrarDescricao.value = true
+  produto.mostrarDescricao = true
+  exibirDescricao.value = true
 }
 
 const mostruario = () => {
@@ -430,16 +412,16 @@ body {
   color: #545454;
 }
 
-#opc-sumario {
+/* #opc-sumario {
   font-size: 11px;
   margin-top: -3%;
-}
+} */
 
-#text-opc-sumario {
+/* #text-opc-sumario {
   white-space: normal;
   word-wrap: break-word;
   text-align: left;
-}
+} */
 #imgCheia {
   width: 90%;
 }
@@ -515,11 +497,11 @@ img {
 }
 
 .container {
-  gap: 16px;
-}
-
-.page {
-  flex: 1 1 calc(100% - 16px); /* Ajusta para ocupar 100% em telas menores */
+  min-height: calc(100vh - 65px); /* 64px é a altura da barra */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (min-width: 769px) {
@@ -562,12 +544,16 @@ h3 {
   box-shadow: 0 0 20px 0 rgba(208, 208, 208, 0.5) !important;
   display: block;
   background-size: cover !important;
+  align-items: center;
+  margin: 1px auto;
 
   height: 0vh;
   max-height: none;
   overflow: hidden;
 }
 .page {
+  flex: 1 1 calc(100% - 16px); /* Ajusta para ocupar 100% em telas menores */
+  margin: 16px auto; /* Centraliza horizontalmente */
   padding: 5px;
   background-color: hsl(0, 0%, 100%);
   color: hsl(0, 0%, 0%);

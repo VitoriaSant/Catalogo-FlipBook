@@ -99,24 +99,24 @@ const props = defineProps<{
         comprimento: number
         pesoBruto: number
         pesoLiquido: number
-        mostrarDetalhamento: boolean
+        mostrarDescricao: boolean
     }
 }>()
 
 const emit = defineEmits<{
-    (e: 'update:mostrarDetalhamento', value: boolean): void
+    (e: 'update:mostrarDescricao', value: boolean): void
 }>()
 
-const dialog = ref(props.produto.mostrarDetalhamento)
+const dialog = ref(props.produto.mostrarDescricao)
 
 // Sincronizar entrada externa com ref interna
-watch(() => props.produto.mostrarDetalhamento, (val) => {
+watch(() => props.produto.mostrarDescricao, (val) => {
     dialog.value = val
 })
 
 // Atualizar valor externo quando o diálogo fecha
 watch(dialog, (val) => {
-    emit('update:mostrarDetalhamento', val)
+    emit('update:mostrarDescricao', val)
 })
 </script>
 <style>

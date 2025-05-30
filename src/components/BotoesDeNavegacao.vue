@@ -24,10 +24,11 @@
     bottom: 0;
     left: 0;
     right: 0;
+    height: 64px;
     margin-bottom: 1px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 #botoesDeNavegacaoCentral {
-    gap: 6px; 
+    gap: 6px;
 }
 </style>
