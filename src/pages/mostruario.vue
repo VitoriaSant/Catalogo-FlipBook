@@ -1,11 +1,26 @@
 <template class="bg-custom_gray">
   <v-progress-circular id="loading" v-if="loading" color="dark-blue" indeterminate :size="57" />
-  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro"/>
+  <Alerta v-if="alert" :mensagem="mensagem" :titulo-erro="tituloErro" />
   <div class="container bg-custom_gray">
     <div class="flip-book" id="book">
-      <div class="page page-cover page-cover-top" >
+      <div class="page page-cover page-cover-top bg-custom_gray_dark">
         <div id="capaCatalogo">
           <h2>{{ lista?.descricaoMst }}</h2>
+          <v-sheet class="d-flex align-center justify-center">
+            <v-img
+              v-if="!imgErro"
+              class="bg-custom_gray_dark"
+              :height="windowWidth > 500 ? '600px' : '450px'"
+              :src="imgCapa"
+              @error="imgErro = true"              
+            />
+            <v-img
+              v-else
+              class="bg-custom_gray_dark"
+              :height="windowWidth > 500 ? '600px' : '400px'"
+              :src="errorImg"
+            />
+          </v-sheet>
         </div>
       </div>
       <!-- Pagina de produtos -->
@@ -26,43 +41,87 @@
                 :key="imgId"
               >
                 <v-sheet height="100%" class="d-flex align-center justify-center">
-                  <v-img class="bg-grey-lighten-2" :src="detalhe.url" />
+                  <v-img
+                    v-if="!imgErro"
+                    class="bg-custom_gray_dark"
+                    :height="windowWidth > 500 ? '600px' : '450px'"
+                    :src="detalhe.url"
+                    @error="imgErro = true"              
+                  />
+                  <v-img
+                    v-else
+                    class="bg-custom_gray_dark"
+                    :height="windowWidth > 500 ? '600px' : '400px'"
+                    :src="errorImg"
+                  />
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
           </div>
-            <!-- Seleçao de detalhamento -->
-              <v-select
-                class="w-100 altura-fixa-select gb-1"
-                label="Detalhamento"
-                variant="solo-filled"
-                density="compact"
-                :items="produto.detalhamentos"
-                :item-title="(item) => concatenarDetalhe(item)"
-                :return-object="true"
-                v-model="produto.detalhamentoSelecionado"
-              >
-              </v-select>    
-          <v-row class="d-flex justify-center" id="botoesPagina" >
+          <!-- Seleçao de detalhamento -->
+          <v-select
+            class="w-100 altura-fixa-select gb-1"
+            label="Detalhamento"
+            variant="solo-filled"
+            density="compact"
+            :items="produto.detalhamentos"
+            :item-title="(item) => concatenarDetalhe(item)"
+            :return-object="true"
+            v-model="produto.detalhamentoSelecionado"
+          >
+          </v-select>
+          <v-row class="d-flex justify-center" id="botoesPagina">
             <!-- Botão de descricao do produto -->
-            <v-col cols="6" class="d-flex justify-end btnInfo ">
+            <v-col cols="6" class="d-flex justify-end btnInfo">
               <div>
-                <v-btn variant="tonal" v-tooltip="'Descrição'" icon="mdi-exclamation-thick" @click="exibirDetalhamento(produto)"></v-btn>
-                <Descricao 
-                v-if="exibirDescricao" 
-                :valorModal="exibirDescricao" 
-                :produto="{
-                  ...produto,
-                  mostrarDescricao: produto.mostrarDescricao ?? false
-                }"       
-                @update:mostrarDescricao="produto.mostrarDescricao = $event"/>
-                
+                <div
+                  v-if="
+                    produto.colecao == 'INDEFINIDA' &&
+                    produto.linha == 'INDEFINIDA' &&
+                    produto.grupo == 'INDEFINIDO' &&
+                    produto.altura == 0 &&
+                    produto.largura == 0 &&
+                    produto.comprimento == 0 &&
+                    produto.descricaoResumida == null &&
+                    produto.pesoBruto == 0 &&
+                    produto.pesoLiquido == 0
+                  "
+                >
+                  <v-btn
+                    variant="tonal"
+                    v-tooltip="'Descrição'"
+                    :disabled="true"
+                    icon="mdi-exclamation-thick"
+                  ></v-btn>
+                </div>
+                <div v-else>
+                  <v-btn
+                    variant="tonal"
+                    v-tooltip="'Descrição'"
+                    icon="mdi-exclamation-thick"
+                    @click="exibirDetalhamento(produto)"
+                  ></v-btn>
+                </div>
+                <Descricao
+                  v-if="exibirDescricao"
+                  :valorModal="exibirDescricao"
+                  :produto="{
+                    ...produto,
+                    mostrarDescricao: produto.mostrarDescricao ?? false
+                  }"
+                  @update:mostrarDescricao="produto.mostrarDescricao = $event"
+                />
               </div>
             </v-col>
             <!-- Expandir imagem -->
             <v-col cols="6" class="d-flex justify-start btnInfo">
               <div>
-                <v-btn variant="tonal" v-tooltip="'Expandir'" icon="mdi-magnify-expand" @click="expandirImg(produto)"></v-btn>
+                <v-btn
+                  variant="tonal"
+                  v-tooltip="'Expandir'"
+                  icon="mdi-magnify-expand"
+                  @click="expandirImg(produto)"
+                ></v-btn>
               </div>
             </v-col>
           </v-row>
@@ -119,7 +178,7 @@
           label="Pesquisa"
           clearable
           :items="filtroProdutos"
-          :item-title="'descricao'" 
+          :item-title="'descricao'"
           v-model="produtoSelecionado"
           :return-object="true"
           @update:modelValue="onSelect"
@@ -129,23 +188,23 @@
       </v-card>
     </v-dialog>
     <!-- Botões de navegação -->
-    <BotoesDeNavegacao 
-    @onclickSumario="onclickSumario"
-    @mostruario="mostruario"  
-    @pesquisa="pesquisa"
-    @antPag="antPag"
-    @proxPag="proxPag"
+    <BotoesDeNavegacao
+      @onclickSumario="onclickSumario"
+      @mostruario="mostruario"
+      @pesquisa="pesquisa"
+      @antPag="antPag"
+      @proxPag="proxPag"
     />
 
     <!-- Sumario -->
-      <Sumario v-if="mostrarSumario"
+    <Sumario
+      v-if="mostrarSumario"
       :filtroProdutos="filtroProdutos"
       :valorModal="mostrarSumario"
       @selectPag="selectPag"
       @update:valorModal="mostrarSumario = $event"
-      />
+    />
   </div>
-  
 </template>
 
 <script lang="ts" setup>
@@ -159,6 +218,7 @@ import Alerta from '@/components/Alert.vue'
 import Sumario from '@/components/Sumario.vue'
 import Descricao from '@/components/Descricao.vue'
 import BotoesDeNavegacao from '@/components/BotoesDeNavegacao.vue'
+import errorImg from '@/assets/images/erro-img.jpg'
 
 interface RouteParams {
   id: string
@@ -175,7 +235,9 @@ const route = useRoute()
 const router = useRouter()
 const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
-
+const imgErro = ref(false)
+const imgCapa = ref<string>('https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100') // URL da imagem da capa do catálogo
+// const imgCapa = ref<string>('https://dominio.com/nao-existe.jpg') // URL de exemplo que pode gerar erro
 
 let exibirDescricao = ref<boolean>(false)
 let mostrarSumario = ref<boolean>(false)
@@ -184,7 +246,7 @@ let mensagem = ''
 let tituloErro = ''
 
 const onclickSumario = () => {
-  mostrarSumario.value = true	
+  mostrarSumario.value = true
 }
 
 const updateWindowWidth = () => {
@@ -238,6 +300,8 @@ const antPag = () => {
   }
 }
 
+
+
 function concatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor
   let variacao = item.desVariacao == 'INDEFINIDA' ? '' : item.desVariacao
@@ -289,7 +353,11 @@ onMounted(async () => {
     loading.value = false
     alert.value = true
     tituloErro = error?.error.name || 'Erro desconhecido'
-    mensagem = JSON.stringify(error.error.response.data.error) || error?.error.message || error?.message  || 'Erro desconhecido'
+    mensagem =
+      JSON.stringify(error.error.response.data.error) ||
+      error?.error.message ||
+      error?.message ||
+      'Erro desconhecido'
   } finally {
     loading.value = false
   }
@@ -340,12 +408,10 @@ function construirLivro() {
   if (pages.length === 0) throw 'Nenhuma página encontrada'
 
   pageFlip.value.loadFromHTML(pages)
-
 }
 </script>
 
 <style>
-
 .altura-fixa-select .v-input__control {
   min-height: 40px !important; /* Ajuste o valor conforme necessário */
 }
@@ -395,8 +461,6 @@ body {
   justify-content: center;
 }
 
-
-
 #ultimaPagina {
   font-size: 25px;
   text-align: center;
@@ -426,7 +490,6 @@ body {
   width: 90%;
 }
 
-
 @media (max-width: 500px) {
   .carousel-img {
     width: 95%;
@@ -446,15 +509,18 @@ body {
     margin: 2%;
   }
   #botoesPagina {
-  display: flex;
-  justify-content: space-between; /* Distribui os botões horizontalmente */
-  position: absolute;
-  bottom: 40px;
-  left: 0;
-  height: 80px;
-  right: 0;
-  margin-top: 50px;
-}
+    display: flex;
+    justify-content: space-between; /* Distribui os botões horizontalmente */
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    height: 80px;
+    right: 0;
+    margin-top: 50px;
+  }
+  .page.page-cover h2 {
+    text-align: center;
+  }
 }
 
 @media (min-width: 501px) {
@@ -472,15 +538,19 @@ body {
     margin: auto;
   }
   #botoesPagina {
-  display: flex;
-  justify-content: space-between; /* Distribui os botões horizontalmente */
-  position: absolute;
-  bottom: 40px;
-  left: 0;
-  height: 70px;
-  right: 0;
-  margin-top: 50px;
-}
+    display: flex;
+    justify-content: space-between; /* Distribui os botões horizontalmente */
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    height: 70px;
+    right: 0;
+    margin-top: 50px;
+  }
+  .page.page-cover h2 {
+    text-align: center;
+    font-size: 210%;
+  }
 }
 
 v-img {
@@ -527,12 +597,6 @@ img {
 
 .page img {
   width: 500%;
-}
-
-.page.page-cover h2 {
-  text-align: center;
-  padding-top: 50%;
-  font-size: 210%;
 }
 
 h3 {
@@ -631,7 +695,7 @@ h3 {
 }
 
 .page.page-cover.page-cover-top {
-  box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(36, 10, 3, 0.5);
+  box-shadow: inset 0px 0 5px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(36, 10, 3, 0.5);
 }
 
 .page.page-cover.page-cover-bottom {

@@ -27,6 +27,7 @@ export default createVuetify({
           success: '#4CAF50',
           warning: '#FFC107',
           custom_gray: '#E0E0E0',
+          custom_gray_dark: '#757575',
         },
       },
       dark: {

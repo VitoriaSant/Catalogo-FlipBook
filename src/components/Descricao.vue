@@ -52,8 +52,8 @@
             <v-col>
                 {{ produto.largura }}
             </v-col>
-        </v-row v-if="produto.comprimento !== 0">
-        <v-row>
+        </v-row>
+        <v-row v-if="produto.comprimento !== 0">
             <v-col>
                 Comprimento:
             </v-col>
@@ -61,11 +61,11 @@
                 {{ produto.comprimento }}
             </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="produto.pesoBruto !== 0">
             <v-col>
                 Preço Bruto:
             </v-col>
-            <v-col v-if="produto.pesoBruto !== 0">
+            <v-col >
                 {{ produto.pesoBruto }}
             </v-col>
         </v-row>
