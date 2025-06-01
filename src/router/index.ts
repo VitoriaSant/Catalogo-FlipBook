@@ -12,12 +12,12 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/pages/mostruarios.vue')
+    component: () => import('@/pages/Mostruarios.vue')
   },
   {
     path: '/mostruario/:id',
     name: 'Mostruario',
-    component: () => import('@/pages/mostruario.vue')
+    component: () => import('@/pages/Mostruario.vue')
   }
 ]
 

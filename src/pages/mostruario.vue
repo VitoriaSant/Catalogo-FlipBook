@@ -12,7 +12,7 @@
               class="bg-custom_gray_dark"
               :height="windowWidth > 500 ? '600px' : '450px'"
               :src="imgCapa"
-              @error="imgErro = true"              
+              @error="imgErro = true"
             />
             <v-img
               v-else
@@ -46,7 +46,7 @@
                     class="bg-custom_gray_dark"
                     :height="windowWidth > 500 ? '600px' : '450px'"
                     :src="detalhe.url"
-                    @error="imgErro = true"              
+                    @error="imgErro = true"
                   />
                   <v-img
                     v-else
@@ -171,6 +171,13 @@
       </div>
     </div>
     <!-- Pesquisa de item -->
+    <!-- <Pesquisa
+      v-if="exibirPesquisa"
+      :valorModal="exibirPesquisa"
+      :filtroProdutos="filtroProdutos"
+      @update:valorModal="exibirPesquisa = $event"
+      @onSelect="onSelect"
+      /> -->
     <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
       <v-card id="cardDescricaoEPesquisa">
         <v-autocomplete
@@ -195,14 +202,14 @@
       @antPag="antPag"
       @proxPag="proxPag"
     />
-
     <!-- Sumario -->
     <Sumario
-      v-if="mostrarSumario"
+      v-if="exibirSumario"
+      :valorModal="exibirSumario"
       :filtroProdutos="filtroProdutos"
-      :valorModal="mostrarSumario"
+      @update:valorModal="exibirSumario = $event"
       @selectPag="selectPag"
-      @update:valorModal="mostrarSumario = $event"
+      
     />
   </div>
 </template>
@@ -212,22 +219,25 @@ import { Produto } from '@/classes/produtosCatalogo'
 import { PageFlip } from 'page-flip'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
-import { getProdutos } from '../services/getItens'
+import { getProdutos } from '@/services/getMostruarios'
+// import { getProdutos } from '../services/getItens'
 import { ListaProduto } from '@/classes/produtosCatalogo'
 import Alerta from '@/components/Alert.vue'
 import Sumario from '@/components/Sumario.vue'
 import Descricao from '@/components/Descricao.vue'
 import BotoesDeNavegacao from '@/components/BotoesDeNavegacao.vue'
+import Pesquisa from '@/components/Pesquisa.vue'
+import ExpandirFoto from '@/components/ExpandirFoto.vue'
 import errorImg from '@/assets/images/erro-img.jpg'
 
 interface RouteParams {
   id: string
 }
 
+const ativarPesquisa = ref(false)
 const pageFlip = ref<PageFlip>()
 const filtroProdutos = ref<Produto[]>([])
 const lista = ref<ListaProduto | null>(null)
-const ativarPesquisa = ref(false)
 const imgTelacheia = ref(false)
 const produtoSelecionado = ref<Produto>({} as Produto)
 const windowWidth = ref(window.innerWidth)
@@ -236,17 +246,20 @@ const router = useRouter()
 const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
 const imgErro = ref(false)
-const imgCapa = ref<string>('https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100') // URL da imagem da capa do catálogo
+const imgCapa = ref<string>( // URL da imagem da capa do catálogo
+  'https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100')
 // const imgCapa = ref<string>('https://dominio.com/nao-existe.jpg') // URL de exemplo que pode gerar erro
 
+let exibirExpandirFoto = ref<boolean>(false)
 let exibirDescricao = ref<boolean>(false)
-let mostrarSumario = ref<boolean>(false)
+let exibirSumario = ref<boolean>(false)
+let exibirPesquisa = ref<boolean>(false)
 let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
 const onclickSumario = () => {
-  mostrarSumario.value = true
+  exibirSumario.value = true
 }
 
 const updateWindowWidth = () => {
@@ -271,6 +284,7 @@ const expandirImg = (produto: any) => {
 }
 
 const pesquisa = () => {
+  // exibirPesquisa.value = true
   ativarPesquisa.value = !ativarPesquisa.value
 }
 
@@ -299,8 +313,6 @@ const antPag = () => {
     pageFlip.value.turnToPrevPage()
   }
 }
-
-
 
 function concatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor

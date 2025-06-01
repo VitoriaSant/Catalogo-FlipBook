@@ -16,7 +16,7 @@
         <v-row v-if="produto.colecao !== 'INDEFINIDA'">
             <v-col>
                 Coleção:
-            </v-col>
+            </v-col> 
             <v-col>
                 {{ produto.colecao }}
             </v-col>

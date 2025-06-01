@@ -1,37 +1,50 @@
+import { ListaProduto, Produto } from '@/classes/produtosCatalogo'
 import { api } from '@/services/api'
+import caminho from '@/../shared/constant'
 
 interface ListaResposta {
-  catalogos: any[]
+  mostruario: any[]
 }
-interface listaError {
-  idError: string
-  messageError: string
-  error: unknown
+
+export interface IResponseGetProdutos {
+  autoincMst: number
+  descricaoMst: string
+  codigoEmpresa: number
+  descricaoEmpresa: string
+  itens: any[]
 }
-export async function getMostruarios(){
+
+export async function getMostruarios() {
   try {
-    const { data } = await api.get<ListaResposta>(import.meta.env.VITE_LISTAR_MOSTRUARIOS)
-    if (data.length === 0) {
-      throw {
-        idError: 'ERR_VOID',
-        messageError: 'Nenhum catálogo encontrado'
-      } as listaError
-    }
+    const { data } = await api.get<ListaResposta>(caminho + '/mostruario/disponiveis')
     return data
   } catch (error) {
-    if (error.idError === 'ERR_VOID') {
-      throw{
-        idError: error.idError,
-        messageError: error.messageError,
-        error
-      } 
-    }else {
-      throw {	
-        idError: 'ERR_AUTH',
-        messageError: 'Falha na listagem dos catálogos',
-        error
-      } as listaError
+    throw {
+      error
     }
-    
+  }
+}
+
+export async function getProdutos(idMostruario: number): Promise<ListaProduto> {
+  try {
+    const { data } = await api<IResponseGetProdutos>({
+      method: 'GET',
+      url: `${caminho}/mostruario/${idMostruario}/itens?apenasItensComImagens=${idMostruario}`
+    })
+    const lista = new ListaProduto(
+      data.autoincMst,
+      data.descricaoMst,
+      data.codigoEmpresa,
+      data.descricaoEmpresa,
+      []
+    )
+    for (const registro of data.itens) {
+      lista.produtos.push(new Produto(registro))
+    }
+    return lista
+  } catch (error) {
+    throw {
+      error
+    }
   }
 }

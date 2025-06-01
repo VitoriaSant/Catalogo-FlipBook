@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="(catalogo, id) in ListaCat"
+          v-for="(catalogo, id) in ListaMostr"
           :key="id"
           @click="mostruariosSelecionado(catalogo.autoincMst)"
         >
@@ -29,13 +29,14 @@
 import { ref, onMounted } from 'vue'
 import { getMostruarios } from '@/services/getMostruarios'
 import { useRouter } from 'vue-router'
+
 import Alerta from '@/components/Alert.vue'
 
 const router = useRouter()
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const tabela = ref<boolean>(true)
-const ListaCat = ref<any[]>([])
+const ListaMostr = ref<any[]>([])
 
 let alert = ref<boolean>(false)
 let mensagem = ''
@@ -46,7 +47,8 @@ onMounted(async () => {
   alert.value = false
   try {
     const resposta = await getMostruarios()
-    ListaCat.value = resposta
+    console.log(resposta)
+    ListaMostr.value = resposta
     loading.value = false
 
   } catch (error: any) {
