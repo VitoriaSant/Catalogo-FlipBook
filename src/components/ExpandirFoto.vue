@@ -1,7 +1,7 @@
 <!-- Nao esta sendo utilizado, mas pode ser usado para expandir uma foto -->
 <template>
     <v-dialog v-model="dialog">
-        <v-card id="cardDescricao">
+        <v-card>
             teste
         </v-card>   
     </v-dialog>
@@ -34,29 +34,4 @@ watch(dialog, (val) => {
 
 </script>
 <style>
-#opc-sumario {
-    font-size: 11px;
-    margin-top: -1%;
-}
-
-#text-opc-sumario {
-    white-space: normal;
-    word-wrap: break-word;
-    text-align: left;
-}
-
-@media (min-width: 501px) {
-    #cardDescricao {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        width: 700px;
-        margin: auto;
-    }
-}
-
-#tituloCardDescricao {
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
 </style>

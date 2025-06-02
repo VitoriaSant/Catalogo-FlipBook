@@ -1,14 +1,14 @@
 <!-- Nào esta sendo utilizado para exibir a pesquisa de produtos -->
 <template>
     <v-dialog v-model="dialog">
-        <v-card id="cardDescricao">
-            <v-card-title class="bg-primary" id="tituloCardDescricao">
+        <v-card id="Detalhecard">
+            <v-card-title class="bg-primary" id="tituloCard">
                 <v-row>
                     <v-col cols="10" class="text-h6 border-right">
                         Pesquisa
                     </v-col>
                     <v-col cols="2" class="d-flex justify-end">
-                        <v-btn variant="outlined" id="btnTelaDesc" icon="mdi-close" class="aling-end"
+                        <v-btn variant="outlined" id="btnTelaCard" icon="mdi-close" class="aling-end"
                             @click="dialog = false" v-tooltip="'Fechar'"></v-btn>
                     </v-col>
                 </v-row>
@@ -69,26 +69,8 @@ watch(dialog, (val) => {
 
 </script>
 <style>
-#opc-sumario {
-    font-size: 11px;
-    margin-top: -1%;
-}
 
-#text-opc-sumario {
-    white-space: normal;
-    word-wrap: break-word;
-    text-align: left;
-}
-
-@media (min-width: 501px) {
-    #cardDescricao {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        width: 700px;
-        margin: auto;
-    }
-}
-
-#tituloCardDescricao {
+#tituloCardPesquisa {
     color: white;
     font-weight: bold;
     font-size: 1.5rem;

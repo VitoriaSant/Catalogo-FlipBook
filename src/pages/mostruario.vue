@@ -44,14 +44,12 @@
                   <v-img
                     v-if="!imgErro"
                     class="bg-custom_gray_dark"
-                    :height="windowWidth > 500 ? '600px' : '450px'"
                     :src="detalhe.url"
                     @error="imgErro = true"
                   />
                   <v-img
                     v-else
                     class="bg-custom_gray_dark"
-                    :height="windowWidth > 500 ? '600px' : '400px'"
                     :src="errorImg"
                   />
                 </v-sheet>
@@ -59,17 +57,19 @@
             </v-carousel>
           </div>
           <!-- Seleçao de detalhamento -->
-          <v-select
-            class="w-100 altura-fixa-select gb-1"
-            label="Detalhamento"
-            variant="solo-filled"
-            density="compact"
-            :items="produto.detalhamentos"
-            :item-title="(item) => concatenarDetalhe(item)"
-            :return-object="true"
-            v-model="produto.detalhamentoSelecionado"
-          >
-          </v-select>
+              <v-select
+                id="select-detalhe"
+                class="altura-fixa-select"
+                label="Detalhamento"
+                variant="solo-filled"
+                density="compact"
+                :items="produto.detalhamentos"
+                :item-title="(item) => concatenarDetalhe(item)"
+                :return-object="true"
+                v-model="produto.detalhamentoSelecionado"
+              >
+              </v-select>
+    
           <v-row class="d-flex justify-center" id="botoesPagina">
             <!-- Botão de descricao do produto -->
             <v-col cols="6" class="d-flex justify-end btnInfo">
@@ -127,8 +127,18 @@
           </v-row>
           <div class="page-footer">{{ index + 1 }}</div>
         </div>
-        <!-- Imagem em tela cheia             -->
-        <v-dialog v-model="imgTelacheia" fullscreen>
+      <!-- Ultima pagina -->
+      <div class="page page-cover page-cover-bottom" data-density="hard">
+        <div id="ultimaPagina">
+          <div>
+            {{ lista?.descricaoMst }}
+            <p>Fim</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Imagem em tela cheia -->
+    <v-dialog v-model="imgTelacheia" fullscreen>
           <template v-if="produtoSelecionado">
             <v-carousel
               :height="windowWidth > 500 ? '800px' : '500px'"
@@ -160,16 +170,6 @@
           </template>
         </v-dialog>
       </div>
-      <!-- Ultima pagina -->
-      <div class="page page-cover page-cover-bottom" data-density="hard">
-        <div id="ultimaPagina">
-          <div>
-            {{ lista?.descricaoMst }}
-            <p>Fim</p>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Pesquisa de item -->
     <!-- <Pesquisa
       v-if="exibirPesquisa"
@@ -179,7 +179,18 @@
       @onSelect="onSelect"
       /> -->
     <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
-      <v-card id="cardDescricaoEPesquisa">
+      <v-card id="Detalhecard">
+        <v-card-title class="bg-primary" id="tituloCard">
+            <v-row>
+                <v-col cols="10" class="text-h6 border-right ">
+                    Pesquisa
+                </v-col>
+                <v-col cols="2" class="d-flex justify-end">
+                    <v-btn variant="outlined" id="btnTelaCard" icon="mdi-close" size="small" class="aling-end"
+                        @click="pesquisa" v-tooltip="'Fechar'"></v-btn>
+                </v-col>
+            </v-row>
+        </v-card-title>
         <v-autocomplete
           id="autocomplete"
           label="Pesquisa"
@@ -191,7 +202,6 @@
           @update:modelValue="onSelect"
         >
         </v-autocomplete>
-        <v-btn @click="pesquisa">Fechar Pesquisa</v-btn>
       </v-card>
     </v-dialog>
     <!-- Botões de navegação -->
@@ -278,7 +288,7 @@ const mostruario = () => {
   router.push('/')
 }
 
-const expandirImg = (produto: any) => {
+const expandirImg = (produto: Produto) => {
   produtoSelecionado.value = produto
   imgTelacheia.value = true
 }
@@ -424,9 +434,7 @@ function construirLivro() {
 </script>
 
 <style>
-.altura-fixa-select .v-input__control {
-  min-height: 40px !important; /* Ajuste o valor conforme necessário */
-}
+
 
 @media (max-width: 600px) {
   .altura-fixa-select .v-input__control {
@@ -437,6 +445,7 @@ function construirLivro() {
 body {
   overflow-x: hidden;
 }
+
 #loading {
   position: fixed;
   top: 50%;
@@ -457,7 +466,7 @@ body {
   margin-top: 0;
 }
 
-#cardDescricaoEPesquisa {
+#Detalhecard {
   max-width: 100%;
   max-height: 100%;
   padding: 20px;
@@ -488,6 +497,14 @@ body {
   color: #545454;
 }
 
+#btnTelaCard.v-btn {
+    min-width: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+}
+
 /* #opc-sumario {
   font-size: 11px;
   margin-top: -3%;
@@ -498,10 +515,22 @@ body {
   word-wrap: break-word;
   text-align: left;
 } */
+
+.altura-fixa-select .v-input__control {
+  min-height: 40px !important;
+}
+
 #imgCheia {
   width: 90%;
 }
-
+#tituloCard {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1%;
+    border-radius: 5px;
+}
 @media (max-width: 500px) {
   .carousel-img {
     width: 95%;
@@ -524,7 +553,7 @@ body {
     display: flex;
     justify-content: space-between; /* Distribui os botões horizontalmente */
     position: absolute;
-    bottom: 40px;
+    bottom: 25px;
     left: 0;
     height: 80px;
     right: 0;
@@ -532,6 +561,12 @@ body {
   }
   .page.page-cover h2 {
     text-align: center;
+  }
+
+  .altura-fixa-select .v-field {
+    margin-top: 25px;
+    min-height: 50px !important;
+    height: 32px !important;
   }
 }
 
@@ -544,7 +579,7 @@ body {
     align-items: flex-start;
     justify-content: center;
   }
-  #cardDescricaoEPesquisa {
+  #Detalhecard {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     width: 700px;
     margin: auto;
@@ -553,11 +588,11 @@ body {
     display: flex;
     justify-content: space-between; /* Distribui os botões horizontalmente */
     position: absolute;
-    bottom: 40px;
+    bottom: 25px;
     left: 0;
     height: 70px;
     right: 0;
-    margin-top: 50px;
+    margin-top: 70px;
   }
   .page.page-cover h2 {
     text-align: center;
@@ -603,9 +638,6 @@ img {
   margin-top: 1%;
 }
 
-/* .select-detalhe {
-  margin-top: 3%;
-} */
 
 .page img {
   width: 500%;
@@ -675,10 +707,9 @@ h3 {
 
 .page .page-content .page-footer {
   height: 30px;
-  border-top: solid 1px hsl(248, 57%, 90%);
   font-size: 80%;
-  color: hsl(251, 20%, 50%);
-  margin-top: 8%;
+  margin-bottom: 1%;
+  margin-top: auto;
 }
 
 .page.--left {
