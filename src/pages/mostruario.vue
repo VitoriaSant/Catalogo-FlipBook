@@ -127,7 +127,8 @@
           </v-row>
           <div class="page-footer">{{ index + 1 }}</div>
         </div>
-      <!-- Ultima pagina -->
+      </div>
+        <!-- Ultima pagina -->
       <div class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
           <div>
@@ -136,7 +137,6 @@
           </div>
         </div>
       </div>
-    </div>
     <!-- Imagem em tela cheia -->
     <v-dialog v-model="imgTelacheia" fullscreen>
           <template v-if="produtoSelecionado">
@@ -365,6 +365,9 @@ onMounted(async () => {
     if (filtroProdutos.value.length > 0) {
       produtoSelecionado.value = filtroProdutos.value[0]
     }
+    filtroProdutos.value.forEach((produto, index) => {
+      produto.paginaDoProduto = Math.floor(index + 1)
+    })
 
     await nextTick()
     construirLivro()
