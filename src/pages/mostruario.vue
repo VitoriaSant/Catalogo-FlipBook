@@ -147,14 +147,7 @@
       />
       </div>
     <!-- Pesquisa de item -->
-    <!-- <Pesquisa
-      v-if="exibirPesquisa"
-      :valorModal="exibirPesquisa"
-      :filtroProdutos="filtroProdutos"
-      @update:valorModal="exibirPesquisa = $event"
-      @onSelect="onSelect"
-      /> -->
-    <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
+    <!-- <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
       <v-card id="Detalhecard">
         <v-card-title class="bg-primary" id="tituloCard">
             <v-row>
@@ -179,7 +172,14 @@
         >
         </v-autocomplete>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
+    <ExpandirPesquisa
+      v-if="exibirPesquisa"
+      :valorModal="exibirPesquisa"
+      :filtroProdutos="filtroProdutos"
+      @update:valorModal="exibirPesquisa = $event"
+      @onSelect="onSelect"
+    />
     <!-- Botões de navegação -->
     <BotoesDeNavegacao
       @onclickSumario="onclickSumario"
@@ -212,7 +212,7 @@ import Alerta from '@/components/Alert.vue'
 import Sumario from '@/components/Sumario.vue'
 import Descricao from '@/components/Descricao.vue'
 import BotoesDeNavegacao from '@/components/BotoesDeNavegacao.vue'
-import Pesquisa from '@/components/Pesquisa.vue'
+import ExpandirPesquisa from '@/components/Pesquisa.vue'
 import ExpandirFoto from '@/components/ExpandirFoto.vue'
 import errorImg from '@/assets/images/erro-img.jpg'
 
@@ -270,14 +270,13 @@ const expandirImg = (produto: Produto) => {
 }
 
 const pesquisa = () => {
-  // exibirPesquisa.value = true
-  ativarPesquisa.value = !ativarPesquisa.value
+  exibirPesquisa.value = true
+//ativarPesquisa.value = !ativarPesquisa.value
 }
 
 const onSelect = (produtoSelecionado: any) => {
   if (produtoSelecionado && produtoSelecionado.paginaDoProduto) {
-    const totalPaginas = Math.ceil(filtroProdutos.value.length / 25)
-    const pagina = produtoSelecionado.paginaDoProduto + totalPaginas
+    const pagina = produtoSelecionado.paginaDoProduto
     selectPag(pagina)
   }
 }
