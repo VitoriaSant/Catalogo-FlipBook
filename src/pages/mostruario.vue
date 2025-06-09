@@ -138,37 +138,13 @@
         </div>
       </div>
     <!-- Imagem em tela cheia -->
-    <v-dialog v-model="imgTelacheia" fullscreen>
-          <template v-if="produtoSelecionado">
-            <v-carousel
-              :height="windowWidth > 500 ? '800px' : '500px'"
-              show-arrows="hover"
-              hide-delimiter-background
-              width="100%"
-            >
-              <v-carousel-item
-                v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens"
-                :key="imgId"
-              >
-                <div>
-                  <v-btn icon="mdi-close" @click="imgTelacheia = false" id="btnTelaCheia"></v-btn>
-                </div>
-                <v-sheet
-                  class="d-flex align-center justify-center"
-                  id="sheetTelaCheia"
-                  :height="windowWidth > 500 ? '800px' : '500px'"
-                >
-                  <img
-                    class="bg-grey-lighten-2"
-                    :class="windowWidth > 500 ? '900' : '500px'"
-                    :src="detalhe.url"
-                    alt="Imagem do produto"
-                  />
-                </v-sheet>
-              </v-carousel-item>
-            </v-carousel>
-          </template>
-        </v-dialog>
+      <ExpandirFoto 
+        v-if="imgTelacheia"
+        :valorModal="imgTelacheia"
+        :produtoSelecionado="produtoSelecionado"
+        :windowWidth="windowWidth"
+        @update:valorModal="imgTelacheia = $event"
+      />
       </div>
     <!-- Pesquisa de item -->
     <!-- <Pesquisa
@@ -365,6 +341,7 @@ onMounted(async () => {
     if (filtroProdutos.value.length > 0) {
       produtoSelecionado.value = filtroProdutos.value[0]
     }
+    
     filtroProdutos.value.forEach((produto, index) => {
       produto.paginaDoProduto = Math.floor(index + 1)
     })
