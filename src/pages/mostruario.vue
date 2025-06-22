@@ -427,13 +427,6 @@ body {
   text-align: center;
 } */
 
-/* Fundo preto da img tela cheia */
-#sheetTelaCheia {
-  background-color: #00000067;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
-  display: flex;
-  justify-content: center;
-}
 
 #ultimaPagina {
   font-size: 25px;
@@ -498,10 +491,7 @@ body {
     font-size: 12px;
     text-align: center;
   }
-  #sheetTelaCheia {
-    margin-top: 100%;
-    margin: 2%;
-  }
+  
   #botoesPagina {
     display: flex;
     justify-content: space-between; /* Distribui os botões horizontalmente */
