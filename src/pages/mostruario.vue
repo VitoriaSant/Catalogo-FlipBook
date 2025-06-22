@@ -147,32 +147,6 @@
       />
       </div>
     <!-- Pesquisa de item -->
-    <!-- <v-dialog id="PesquisaItem" v-model="ativarPesquisa">
-      <v-card id="Detalhecard">
-        <v-card-title class="bg-primary" id="tituloCard">
-            <v-row>
-                <v-col cols="10" class="text-h6 border-right ">
-                    Pesquisa
-                </v-col>
-                <v-col cols="2" class="d-flex justify-end">
-                    <v-btn variant="outlined" id="btnTelaCard" icon="mdi-close" size="small" class="aling-end"
-                        @click="pesquisa" v-tooltip="'Fechar'"></v-btn>
-                </v-col>
-            </v-row>
-        </v-card-title>
-        <v-autocomplete
-          id="autocomplete"
-          label="Pesquisa"
-          clearable
-          :items="filtroProdutos"
-          :item-title="'descricao'"
-          v-model="produtoSelecionado"
-          :return-object="true"
-          @update:modelValue="onSelect"
-        >
-        </v-autocomplete>
-      </v-card>
-    </v-dialog> -->
     <ExpandirPesquisa
       v-if="exibirPesquisa"
       :valorModal="exibirPesquisa"
@@ -445,13 +419,13 @@ body {
   margin-top: 0;
 }
 
-#Detalhecard {
+/* #Detalhecard {
   max-width: 100%;
   max-height: 100%;
   padding: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   text-align: center;
-}
+} */
 
 /* Fundo preto da img tela cheia */
 #sheetTelaCheia {
@@ -476,13 +450,13 @@ body {
   color: #545454;
 }
 
-#btnTelaCard.v-btn {
+/* #btnTelaCard.v-btn {
     min-width: 40px !important;
     width: 40px !important;
     height: 40px !important;
     border-radius: 50% !important;
     padding: 0 !important;
-}
+} */
 
 /* #opc-sumario {
   font-size: 11px;
@@ -502,14 +476,14 @@ body {
 #imgCheia {
   width: 90%;
 }
-#tituloCard {
+/* #tituloCard {
     color: white;
     font-weight: bold;
     font-size: 1.5rem;
     text-align: center;
     margin-bottom: 1%;
     border-radius: 5px;
-}
+} */
 @media (max-width: 500px) {
   .carousel-img {
     width: 95%;
