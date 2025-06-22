@@ -18,7 +18,7 @@
               v-else
               class="bg-custom_gray_dark"
               :height="windowWidth > 500 ? '600px' : '400px'"
-              :src="errorImg"
+              :src="ErrorImg"
             />
           </v-sheet>
         </div>
@@ -47,29 +47,25 @@
                     :src="detalhe.url"
                     @error="imgErro = true"
                   />
-                  <v-img
-                    v-else
-                    class="bg-custom_gray_dark"
-                    :src="errorImg"
-                  />
+                  <v-img v-else class="bg-custom_gray_dark" :src="ErrorImg" />
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
           </div>
           <!-- Seleçao de detalhamento -->
-              <v-select
-                id="select-detalhe"
-                class="altura-fixa-select"
-                label="Detalhamento"
-                variant="solo-filled"
-                density="compact"
-                :items="produto.detalhamentos"
-                :item-title="(item) => concatenarDetalhe(item)"
-                :return-object="true"
-                v-model="produto.detalhamentoSelecionado"
-              >
-              </v-select>
-    
+          <v-select
+            id="select-detalhe"
+            class="altura-fixa-select"
+            label="Detalhamento"
+            variant="solo-filled"
+            density="compact"
+            :items="produto.detalhamentos"
+            :item-title="(item) => ConcatenarDetalhe(item)"
+            :return-object="true"
+            v-model="produto.detalhamentoSelecionado"
+          >
+          </v-select>
+
           <v-row class="d-flex justify-center" id="botoesPagina">
             <!-- Botão de descricao do produto -->
             <v-col cols="6" class="d-flex justify-end btnInfo">
@@ -99,7 +95,7 @@
                     variant="tonal"
                     v-tooltip="'Descrição'"
                     icon="mdi-exclamation-thick"
-                    @click="exibirDetalhamento(produto)"
+                    @click="onExibirDetalhamento(produto)"
                   ></v-btn>
                 </div>
                 <Descricao
@@ -120,7 +116,7 @@
                   variant="tonal"
                   v-tooltip="'Expandir'"
                   icon="mdi-magnify-expand"
-                  @click="expandirImg(produto)"
+                  @click="onExpandirImg(produto)"
                 ></v-btn>
               </div>
             </v-col>
@@ -128,7 +124,7 @@
           <div class="page-footer">{{ index + 1 }}</div>
         </div>
       </div>
-        <!-- Ultima pagina -->
+      <!-- Ultima pagina -->
       <div class="page page-cover page-cover-bottom" data-density="hard">
         <div id="ultimaPagina">
           <div>
@@ -137,15 +133,15 @@
           </div>
         </div>
       </div>
-    <!-- Imagem em tela cheia -->
-      <ExpandirFoto 
+      <!-- Imagem em tela cheia -->
+      <ExpandirFoto
         v-if="imgTelacheia"
         :valorModal="imgTelacheia"
         :produtoSelecionado="produtoSelecionado"
         :windowWidth="windowWidth"
         @update:valorModal="imgTelacheia = $event"
       />
-      </div>
+    </div>
     <!-- Pesquisa de item -->
     <ExpandirPesquisa
       v-if="exibirPesquisa"
@@ -156,11 +152,11 @@
     />
     <!-- Botões de navegação -->
     <BotoesDeNavegacao
-      @onclickSumario="onclickSumario"
-      @mostruario="mostruario"
-      @pesquisa="pesquisa"
-      @antPag="antPag"
-      @proxPag="proxPag"
+      @onclickSumario="onClickSumario"
+      @mostruario="onMostruario"
+      @pesquisa="onPesquisa"
+      @antPag="onAntPag"
+      @proxPag="onProxPag"
     />
     <!-- Sumario -->
     <Sumario
@@ -168,33 +164,30 @@
       :valorModal="exibirSumario"
       :filtroProdutos="filtroProdutos"
       @update:valorModal="exibirSumario = $event"
-      @selectPag="selectPag"
-      
+      @selectPag="onSelectPag"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Produto } from '@/classes/produtosCatalogo'
+import { Produto } from '@/classes/ProdutosCatalogo'
 import { PageFlip } from 'page-flip'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
-import { getProdutos } from '@/services/getMostruarios'
-// import { getProdutos } from '../services/getItens'
-import { ListaProduto } from '@/classes/produtosCatalogo'
+import { GetProdutos } from '@/services/getMostruarios'
+import { ListaProduto } from '@/classes/ProdutosCatalogo'
 import Alerta from '@/components/Alert.vue'
 import Sumario from '@/components/Sumario.vue'
 import Descricao from '@/components/Descricao.vue'
 import BotoesDeNavegacao from '@/components/BotoesDeNavegacao.vue'
 import ExpandirPesquisa from '@/components/Pesquisa.vue'
 import ExpandirFoto from '@/components/ExpandirFoto.vue'
-import errorImg from '@/assets/images/erro-img.jpg'
+import ErrorImg from '@/assets/images/erro-img.jpg'
 
 interface RouteParams {
   id: string
 }
 
-const ativarPesquisa = ref(false)
 const pageFlip = ref<PageFlip>()
 const filtroProdutos = ref<Produto[]>([])
 const lista = ref<ListaProduto | null>(null)
@@ -207,10 +200,10 @@ const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
 const imgErro = ref(false)
 const imgCapa = ref<string>( // URL da imagem da capa do catálogo
-  'https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100')
+  'https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100'
+)
 // const imgCapa = ref<string>('https://dominio.com/nao-existe.jpg') // URL de exemplo que pode gerar erro
 
-let exibirExpandirFoto = ref<boolean>(false)
 let exibirDescricao = ref<boolean>(false)
 let exibirSumario = ref<boolean>(false)
 let exibirPesquisa = ref<boolean>(false)
@@ -218,7 +211,7 @@ let alert = ref<boolean>(false)
 let mensagem = ''
 let tituloErro = ''
 
-const onclickSumario = () => {
+const onClickSumario = () => {
   exibirSumario.value = true
 }
 
@@ -226,7 +219,7 @@ const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
 }
 
-const exibirDetalhamento = (produto: any) => {
+const onExibirDetalhamento = (produto: any) => {
   filtroProdutos.value.forEach((p) => {
     p.mostrarDescricao = false
   })
@@ -234,46 +227,46 @@ const exibirDetalhamento = (produto: any) => {
   exibirDescricao.value = true
 }
 
-const mostruario = () => {
+const onMostruario = () => {
   router.push('/')
 }
 
-const expandirImg = (produto: Produto) => {
+const onExpandirImg = (produto: Produto) => {
   produtoSelecionado.value = produto
   imgTelacheia.value = true
 }
 
-const pesquisa = () => {
+const onPesquisa = () => {
   exibirPesquisa.value = true
-//ativarPesquisa.value = !ativarPesquisa.value
+  //ativarPesquisa.value = !ativarPesquisa.value
 }
 
 const onSelect = (produtoSelecionado: any) => {
   if (produtoSelecionado && produtoSelecionado.paginaDoProduto) {
     const pagina = produtoSelecionado.paginaDoProduto
-    selectPag(pagina)
+    onSelectPag(pagina)
   }
 }
 
-const selectPag = (Pag: any) => {
+const onSelectPag = (Pag: any) => {
   if (pageFlip.value) {
     pageFlip.value.turnToPage(Pag)
   }
 }
 
-const proxPag = () => {
+const onProxPag = () => {
   if (pageFlip.value) {
     pageFlip.value.flipNext()
   }
 }
 
-const antPag = () => {
+const onAntPag = () => {
   if (pageFlip.value) {
     pageFlip.value.turnToPrevPage()
   }
 }
 
-function concatenarDetalhe(item: any) {
+function ConcatenarDetalhe(item: any) {
   let cor = item.desCor == 'INDEFINIDA' ? '' : item.desCor
   let variacao = item.desVariacao == 'INDEFINIDA' ? '' : item.desVariacao
   let acabamento = item.desAcabamento == 'INDEFINIDO' ? '' : item.desAcabamento
@@ -291,13 +284,13 @@ onMounted(async () => {
     loading.value = true
     alert.value = false
 
-    const produtos = await getProdutos(id as unknown as number)
+    const produtos = await GetProdutos(id as unknown as number)
     lista.value = new ListaProduto(
       produtos.autoincMst,
       produtos.descricaoMst,
       produtos.codigoEmpresa,
       produtos.descricaoEmpresa,
-      ordenarProdutos(produtos.produtos)
+      OrdenarProdutos(produtos.produtos)
     )
     filtroProdutos.value = lista.value.produtos
 
@@ -314,15 +307,15 @@ onMounted(async () => {
     if (filtroProdutos.value.length > 0) {
       produtoSelecionado.value = filtroProdutos.value[0]
     }
-    
+
     filtroProdutos.value.forEach((produto, index) => {
       produto.paginaDoProduto = Math.floor(index + 1)
     })
 
     await nextTick()
-    construirLivro()
+    ConstruirLivro()
 
-    window.addEventListener('resize', construirLivro)
+    window.addEventListener('resize', ConstruirLivro)
     window.addEventListener('resize', updateWindowWidth)
   } catch (error: any) {
     loading.value = false
@@ -339,7 +332,7 @@ onMounted(async () => {
 })
 
 // Função para ordenar os produtos por nome
-function ordenarProdutos(produtos: any) {
+function OrdenarProdutos(produtos: any) {
   return produtos.sort((a: any, b: any) => {
     // // Ordena primeiro pelo 'grupo'
     // if (a.grupo < b.grupo) return -1
@@ -352,7 +345,7 @@ function ordenarProdutos(produtos: any) {
   })
 }
 
-function construirLivro() {
+function ConstruirLivro() {
   if (filtroProdutos.value.length === 0) {
     console.error('Filtro de produtos está vazio. Não é possível construir o livro.')
     return
@@ -387,8 +380,6 @@ function construirLivro() {
 </script>
 
 <style>
-
-
 @media (max-width: 600px) {
   .altura-fixa-select .v-input__control {
     min-height: 40px !important; /* Mesmo valor para celular */
@@ -426,7 +417,6 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   text-align: center;
 } */
-
 
 #ultimaPagina {
   font-size: 25px;
@@ -491,7 +481,7 @@ body {
     font-size: 12px;
     text-align: center;
   }
-  
+
   #botoesPagina {
     display: flex;
     justify-content: space-between; /* Distribui os botões horizontalmente */
@@ -580,7 +570,6 @@ img {
 .btnInfo {
   margin-top: 1%;
 }
-
 
 .page img {
   width: 500%;

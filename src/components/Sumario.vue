@@ -14,7 +14,7 @@
             </v-card-title>
             <div v-for="numPag in Math.ceil(filtroProdutos.length / 25)" :key="numPag">
                 <p v-for="(produto, i) in filtroProdutos.slice((numPag - 1) * 25, numPag * 25)" :key="i">
-                    <v-btn id="opc-sumario" variant="plain" @click="$emit('selectPag', produto.paginaDoProduto); emit('update:valorModal', false)" >
+                    <v-btn id="opc-sumario" variant="plain" @click="$emit('onSelectPag', produto.paginaDoProduto); emit('update:valorModal', false)" >
                         <div id="text-opc-sumario">{{ produto.paginaDoProduto }} - {{ produto?.descricao }}</div>
                     </v-btn>
                 </p>
@@ -39,7 +39,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:valorModal', value: boolean): void
-    (e: 'selectPag', page: number): void
+    (e: 'onSelectPag', page: number): void
 }>()
 
 const dialog = ref(props.valorModal)

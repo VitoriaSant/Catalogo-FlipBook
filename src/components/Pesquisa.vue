@@ -21,7 +21,7 @@
                 v-model="filtroSelecionado"
                 :item-title="item => `${item.label}`"
                 :item-value="item => `${item.value}`"
-                @update:modelValue="onFiltroChange"   
+                @update:modelValue="OnFiltroChange"   
             </v-autocomplete>
 
             <v-autocomplete 
@@ -29,11 +29,11 @@
                 label="Pesquisa"
                 clearable
                 :items="produtosFiltrados"
-                :item-title="item => getTituloProduto(item)"
+                :item-title="item => GetTituloProduto(item)"
                 v-model="produtoSelecionado"
                 :return-object="true"
                 v-model:search="textoPesquisa"
-                @update:modelValue="onSelect"
+                @update:modelValue="OnSelect"
             />
         </v-card>
     </v-dialog>
@@ -95,19 +95,19 @@ watch(dialog, (val) => {
     emit('update:valorModal', val)
 })
 
-function onFiltroChange(valor: string) {
+function OnFiltroChange(valor: string) {
     filtroSelecionado.value = valor
     textoPesquisa.value = ''
     produtoSelecionado.value = null
     console.log('Filtro selecionado:', valor)
 }
 
-function onSelect(item: any) {
+function OnSelect(item: any) {
     emit('onSelect', item)
     dialog.value = false
 }
 
-function getTituloProduto(produto: any): string {
+function GetTituloProduto(produto: any): string {
 
     switch (filtroSelecionado.value) {
         case 'descricao':

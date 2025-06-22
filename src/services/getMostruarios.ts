@@ -1,4 +1,4 @@
-import { ListaProduto, Produto } from '@/classes/produtosCatalogo'
+import { ListaProduto, Produto } from '@/classes/ProdutosCatalogo'
 import { api } from '@/services/api'
 import caminho from '@/../shared/constant'
 
@@ -14,7 +14,7 @@ export interface IResponseGetProdutos {
   itens: any[]
 }
 
-export async function getMostruarios() {
+export async function GetMostruarios() {
   try {
     const { data } = await api.get<ListaResposta>(caminho + '/mostruario/disponiveis')
     return data
@@ -25,7 +25,7 @@ export async function getMostruarios() {
   }
 }
 
-export async function getProdutos(idMostruario: number): Promise<ListaProduto> {
+export async function GetProdutos(idMostruario: number): Promise<ListaProduto> {
   try {
     const { data } = await api<IResponseGetProdutos>({
       method: 'GET',

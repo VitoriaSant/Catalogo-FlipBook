@@ -13,9 +13,9 @@
       </thead>
       <tbody>
         <tr
-          v-for="(catalogo, id) in ListaMostr"
+          v-for="(catalogo, id) in listaMostr"
           :key="id"
-          @click="mostruariosSelecionado(catalogo.autoincMst)"
+          @click="OnMostruariosSelecionado(catalogo.autoincMst)"
         >
           <td class="text-center">{{ catalogo.autoincMst }}</td>
           <td class="text-center">{{ catalogo.descricaoMst }}</td>
@@ -28,17 +28,19 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { getMostruarios } from '@/services/getMostruarios'
 import { useRouter } from 'vue-router'
-
+import { GetMostruarios } from '@/services/getMostruarios'
+import { ListaMostruario } from '@/classes/Mostruario'
 import Alerta from '@/components/Alert.vue'
 import CardComponentes from '@/components/CardComponentes.vue'
+
 
 const router = useRouter()
 const loading = ref<boolean>(false)
 const listaMostruarios = ref<boolean>(true)
 const tabela = ref<boolean>(true)
-const ListaMostr = ref<any[]>([])
+const listaMostr = ref<ListaMostruario[]>([])
+
 
 let alert = ref<boolean>(false)
 let mensagem = ''
@@ -48,9 +50,8 @@ onMounted(async () => {
   loading.value = true
   alert.value = false
   try {
-    const resposta = await getMostruarios()
-    console.log(resposta)
-    ListaMostr.value = resposta
+    const resposta = await GetMostruarios()
+    listaMostr.value = resposta
     loading.value = false
 
   } catch (error: any) {
@@ -62,7 +63,7 @@ onMounted(async () => {
   }
 })
 
-async function mostruariosSelecionado(idMostruarios: number) {
+async function OnMostruariosSelecionado(idMostruarios: number) {
   try {
     loading.value = true
     alert.value = false
