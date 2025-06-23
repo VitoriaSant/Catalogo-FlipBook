@@ -42,12 +42,16 @@
               >
                 <v-sheet height="100%" class="d-flex align-center justify-center">
                   <v-img
-                    v-if="!imgErro"
+                    v-if="!imgErros[`${produto.descricao}-${imgId}`]"
                     class="bg-custom_gray_dark"
                     :src="detalhe.url"
-                    @error="imgErro = true"
+                    @error="imgErros[`${produto.descricao}-${imgId}`] = true"
                   />
-                  <v-img v-else class="bg-custom_gray_dark" :src="ErrorImg" />
+                  <v-img
+                    v-else
+                    class="bg-custom_gray_dark"
+                    :src="ErrorImg"
+                  />
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
@@ -152,7 +156,7 @@
     />
     <!-- Botões de navegação -->
     <BotoesDeNavegacao
-      @onclickSumario="onClickSumario"
+      @clickSumario="onClickSumario"
       @mostruario="onMostruario"
       @pesquisa="onPesquisa"
       @antPag="onAntPag"
@@ -198,6 +202,7 @@ const route = useRoute()
 const router = useRouter()
 const id = (route.params as RouteParams).id as string
 const loading = ref<boolean>(false)
+const imgErros = ref<{ [key: string]: boolean }>({})
 const imgErro = ref(false)
 const imgCapa = ref<string>( // URL da imagem da capa do catálogo
   'https://www.tothmoveis.com.br/cdn/shop/articles/image-la-serena-nk-16686045534939.jpg?v=1701543567&width=1100'
@@ -334,10 +339,6 @@ onMounted(async () => {
 // Função para ordenar os produtos por nome
 function OrdenarProdutos(produtos: any) {
   return produtos.sort((a: any, b: any) => {
-    // // Ordena primeiro pelo 'grupo'
-    // if (a.grupo < b.grupo) return -1
-    // if (a.grupo > b.grupo) return 1
-
     if (a.nome < b.nome) return -1
     if (a.nome > b.nome) return 1
 
@@ -382,7 +383,7 @@ function ConstruirLivro() {
 <style>
 @media (max-width: 600px) {
   .altura-fixa-select .v-input__control {
-    min-height: 40px !important; /* Mesmo valor para celular */
+    min-height: 40px !important; 
   }
 }
 
@@ -409,14 +410,6 @@ body {
   margin-left: auto;
   margin-top: 0;
 }
-
-/* #Detalhecard {
-  max-width: 100%;
-  max-height: 100%;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  text-align: center;
-} */
 
 #ultimaPagina {
   font-size: 25px;
@@ -581,12 +574,10 @@ h3 {
 
 #book {
   margin: 15px auto;
-  box-shadow: 0 0 20px 0 rgba(208, 208, 208, 0.5) !important;
   display: block;
   background-size: cover !important;
   align-items: center;
   margin: 1px auto;
-
   height: 0vh;
   max-height: none;
   overflow: hidden;
@@ -656,11 +647,6 @@ h3 {
 
 .page.--right .page-content .page-footer {
   text-align: right;
-}
-
-.page.hard {
-  background-color: hsl(245, 49%, 90%);
-  border: solid 1px hsl(229, 20%, 50%);
 }
 
 .page.page-cover {

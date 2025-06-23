@@ -2,7 +2,7 @@
 <template>
     <v-dialog v-model="dialog" fullscreen>
         <template v-if="produtoSelecionado">
-            <v-carousel :height="'100vh'" show-arrows="hover" hide-delimiter-background width="100%">
+            <v-carousel :height="'100vh'" show-arrows="hover" hide-delimiter-background width="100%" :continuous="false">
                 <v-carousel-item v-for="(detalhe, imgId) in produtoSelecionado.detalhamentoSelecionado?.imagens" :key="imgId">
                     <div>
                         <v-btn icon="mdi-close" @click="dialog = false" id="btnTelaCheia"></v-btn>
@@ -45,8 +45,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:valorModal', value: boolean): void
-
-
 }>()
 
 const dialog = ref(props.valorModal)
@@ -64,16 +62,16 @@ watch(dialog, (val) => {
 </script>
 <style>
 #imgTelaCheia {
-  width: 100vw !important;
-  height: 100vh !important;
-  object-fit: contain !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: contain !important;
 }
 
 #sheetTelaCheia {
-  background-color: #00000067;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
-  display: flex;
-  justify-content: center;
+    background-color: #00000067;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5) !important;
+    display: flex;
+    justify-content: center;
 }
 
 </style>
