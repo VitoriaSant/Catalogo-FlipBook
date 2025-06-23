@@ -427,25 +427,6 @@ body {
   color: #545454;
 }
 
-/* #btnTelaCard.v-btn {
-    min-width: 40px !important;
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
-} */
-
-/* #opc-sumario {
-  font-size: 11px;
-  margin-top: -3%;
-} */
-
-/* #text-opc-sumario {
-  white-space: normal;
-  word-wrap: break-word;
-  text-align: left;
-} */
-
 .altura-fixa-select .v-input__control {
   min-height: 40px !important;
 }
@@ -453,14 +434,7 @@ body {
 #imgCheia {
   width: 90%;
 }
-/* #tituloCard {
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 1%;
-    border-radius: 5px;
-} */
+
 @media (max-width: 500px) {
   .carousel-img {
     width: 95%;
@@ -495,6 +469,18 @@ body {
     min-height: 50px !important;
     height: 32px !important;
   }
+  #btnTelaCard {
+        min-width: 32px;
+        min-height: 32px;
+        width: 32px;
+        height: 32px;
+    }
+  #Detalhecard {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    margin: auto;
+    padding: 10px;
+  }
 }
 
 @media (min-width: 501px) {
@@ -510,6 +496,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     width: 700px;
     margin: auto;
+    padding: 20px;
   }
   #botoesPagina {
     display: flex;
@@ -525,6 +512,11 @@ body {
     text-align: center;
     font-size: 210%;
   }
+}
+#tituloCard{
+  border-radius: 5px;
+  margin-bottom: 1%;
+  text-align: center;
 }
 
 v-img {

@@ -23,7 +23,6 @@
       </tbody>
     </v-table>
   </div>
-  <CardComponentes />
 </template>
 
 <script lang="ts" setup>
@@ -32,7 +31,7 @@ import { useRouter } from 'vue-router'
 import { GetMostruarios } from '@/services/getMostruarios'
 import { ListaMostruario } from '@/classes/Mostruario'
 import Alerta from '@/components/Alert.vue'
-import CardComponentes from '@/components/CardComponentes.vue'
+
 
 
 const router = useRouter()

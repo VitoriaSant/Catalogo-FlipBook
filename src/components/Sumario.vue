@@ -8,7 +8,7 @@
                     </v-col>
                     <v-col cols="2" class="d-flex justify-end">
                         <v-btn variant="outlined" id="btnTelaCard" icon="mdi-close" class="aling-end"
-                            @click="emit('update:valorModal', false)" v-tooltip="'Fechar'"></v-btn>
+                            @click="emit('update:valorModal', false)" v-tooltip="'Fechar'" ></v-btn>
                     </v-col>
                 </v-row>
             </v-card-title>
@@ -56,21 +56,4 @@ watch(dialog, (val) => {
 
 </script>
 <style>
-#opc-sumario {
-    font-size: 11px;
-    margin-top: -1%;
-}
-
-#text-opc-sumario {
-    white-space: normal;
-    word-wrap: break-word;
-    text-align: left;
-}
-
-#tituloCardSumario {
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
 </style>

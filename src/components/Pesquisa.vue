@@ -188,10 +188,4 @@ const produtosFiltrados = computed(() => {
 
 </script>
 <style>
-#tituloCardPesquisa {
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
 </style>

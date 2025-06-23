@@ -124,9 +124,6 @@ watch(dialog, (val) => {
 })
 </script>
 <style>
-
-
-
 #conteudoTabeladoDescricao {
     margin-top: 20px;
     text-align: center;
@@ -135,5 +132,4 @@ watch(dialog, (val) => {
     margin-top: 10px;
     text-align: justify;
 }
-
 </style>
