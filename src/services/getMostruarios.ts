@@ -43,8 +43,6 @@ export async function GetProdutos(idMostruario: number): Promise<ListaProduto> {
     }
     return lista
   } catch (error) {
-    throw {
-      error
-    }
+      throw error
   }
 }

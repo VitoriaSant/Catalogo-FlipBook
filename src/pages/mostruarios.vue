@@ -51,15 +51,20 @@ onMounted(async () => {
   alert.value = false
   try {
     const resposta = await GetMostruarios()
-    listaMostr.value = resposta
+    listaMostr.value = Array.isArray(resposta) ? resposta : []
     loading.value = false
 
   } catch (error: any) {
     alert.value = true
     tabela.value = false
     loading.value = false
-    tituloErro = String(error.error.name)
-    mensagem = String(error.messageError + ' - ' + error.error.message)
+    if (error && error.error) {
+      tituloErro = String(error.error.name || 'Erro')
+      mensagem = String(error.error.message || error.message || 'Erro desconhecido')
+    } else {
+      tituloErro = String(error.name || 'Erro')
+      mensagem = String(error.message || 'Erro desconhecido')
+    }
   }
 })
 

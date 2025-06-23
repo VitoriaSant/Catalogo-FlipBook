@@ -325,12 +325,13 @@ onMounted(async () => {
   } catch (error: any) {
     loading.value = false
     alert.value = true
-    tituloErro = error?.error.name || 'Erro desconhecido'
-    mensagem =
-      JSON.stringify(error.error.response.data.error) ||
-      error?.error.message ||
-      error?.message ||
-      'Erro desconhecido'
+    if (error && error.error) {
+      tituloErro = String(error.error.name || 'Erro')
+      mensagem = String(error.error.message || error.message || 'Erro desconhecido')
+    } else {
+      tituloErro = String(error.name || 'Erro')
+      mensagem = String(error.message || 'Erro desconhecido')
+    }
   } finally {
     loading.value = false
   }
